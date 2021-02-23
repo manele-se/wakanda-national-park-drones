@@ -1,4 +1,4 @@
-package group1.wakanda;
+package wakanda;
 
 public class Main {
 
