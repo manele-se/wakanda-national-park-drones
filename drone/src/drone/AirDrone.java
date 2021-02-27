@@ -6,9 +6,19 @@ package drone;
 // (e.g. the smoke sensor randomly, but rarely indicates that it senses smoke).
 
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
 import java.util.concurrent.TimeUnit;
 
 public class AirDrone extends Drone {
+
+    public static final String DRONES_LOCATION_TOPICS = "drone/+/location";
+    IMqttClient client;
+
+    public AirDrone() {
+
+    }
 
     @Override
     public void moveTo() {
@@ -49,5 +59,29 @@ public class AirDrone extends Drone {
     @Override
     public void getMissions() {
 
+    }
+
+    public AirDrone(IMqttClient client){
+        this.client = client;
+    }
+    public MqttMessage Information() {
+        String x = Double.toString(this.x);
+        String y = Double.toString(this.y);
+        // this format just for testing
+        String s = "drone" + this.name + "x:" + x + "y:" + y + "battery" + this.battery;
+        byte[] payload = s.getBytes();
+        return new MqttMessage(payload);
+    }
+
+    public Void call() throws Exception{
+        if(!client.isConnected()){
+            return null;
+        }
+
+        MqttMessage msg = Information();
+        msg.setQos(0);
+        msg.setRetained(true);
+        client.publish(DRONES_LOCATION_TOPICS,msg);
+        return null;
     }
 }

@@ -16,7 +16,7 @@ public abstract class Drone {
     protected double positionY;
 
     // get position from the message
-    // the message will be translated in the main function
+    // the message will be translated in the other function
     public void setPosition(double x, double y) {
         this.positionX = x;
         this.positionY = y;
@@ -27,20 +27,14 @@ public abstract class Drone {
         this.name = s;
     }
 
+    //maybe not needed
     // judge whether the drones are out of bound
     public abstract boolean outOfBounds();
 
     // maybe not needed
     // wake up drone
     public void setAlive() {
-        while (battery > 0) {
-            battery -= 1;//if have time, add some time function.
-            try {
-                TimeUnit.SECONDS.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 
     // send position + heartbeat + batterystate information
@@ -52,6 +46,7 @@ public abstract class Drone {
     // send signal of sensors
     public abstract void sendSensorSignal();
 
+    // translate the json object
     public abstract void getMissions();
 
 }
