@@ -18,10 +18,10 @@ public class Main {
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-groundstation";
 
     // Drones could send their locations using this topic pattern, for example:
-    // drone/1/location
-    // drone/72/location
-    // drone/bob/location
-    // drone/alice/location
+    // chalmers/dat220/group1/drone/1/location
+    // chalmers/dat220/group1/drone/72/location
+    // chalmers/dat220/group1/drone/bob/location
+    // chalmers/dat220/group1/drone/alice/location
     // The second part of the topic is the identity (name) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
@@ -39,12 +39,8 @@ public class Main {
         options.setConnectionTimeout(10);
         mqttClient.connect(options);
 
-        String sendThisJson = "{\"latitude\":-1.948754,\"longitude\":34.700409}";
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-        mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 1, true);
-
         // When there is a message from a drone about location:
-        mqttClient.subscribe(DRONES_LOCATION_TOPICS, 1, (topic, msg) -> {
+        mqttClient.subscribe(DRONES_LOCATION_TOPICS, 0, (topic, msg) -> {
             // Get the raw payload as a stream of bytes
             byte[] rawPayload = msg.getPayload();
 
@@ -67,6 +63,10 @@ public class Main {
 
             mappedObjects.put(droneId, new DroneInfo(latitude, longitude));
         });
+
+        String sendThisJson = "{\"latitude\":-1.948754,\"longitude\":34.700409}";
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+        mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, false);
 
         SpringApplication.run(WebServer.class, args);
     }

@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
     @GetMapping("/mapstate")
-    public Collection<MapObject> getAllMapObjects() {
-        return Main.mappedObjects.values();
+    public Map<String, MapObject> getAllMapObjects() {
+        return Main.mappedObjects;
     }
 }
