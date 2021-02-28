@@ -7,17 +7,37 @@ package drone;
 
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class AirDrone extends Drone {
 
-    public static final String DRONES_LOCATION_TOPICS = "drone/+/location";
-    IMqttClient client;
+    private static final String PUBLISHER_ID = "chalmers-dat220-group1-drone";
+    public static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
+    IMqttClient client = null;
 
     public AirDrone(String n) {
         super(n);
+        try {
+            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(true);
+        options.setCleanSession(true);
+        options.setConnectionTimeout(10);
+        try {
+            client.connect(options);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -28,7 +48,11 @@ public class AirDrone extends Drone {
             x = x + 10;
             y = y + 10;
             battery -= 1;
-            sendInformation();
+            try {
+                sendInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
@@ -61,24 +85,17 @@ public class AirDrone extends Drone {
 
     }
 
-    public MqttMessage Information() {
-        String x = Double.toString(this.x);
-        String y = Double.toString(this.y);
-        // this format just for testing
-        String s = "drone" + this.name + "x:" + x + "y:" + y + "battery" + this.battery;
-        byte[] payload = s.getBytes();
-        return new MqttMessage(payload);
-    }
 
-    public Void call() throws Exception{
-        if(!client.isConnected()){
-            return null;
-        }
+    public void sendInfo() throws Exception {
+        JSONObject positionToSend = new JSONObject();
+        positionToSend.put("latitude", -1.948754);
+        positionToSend.put("longitude", 34.700409);
 
-        MqttMessage msg = Information();
-        msg.setQos(0);
-        msg.setRetained(true);
-        client.publish(DRONES_LOCATION_TOPICS,msg);
-        return null;
+        String sendThisJson = positionToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+        String thisDroneIdentity = "123";
+        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
+        client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
     }
 }
