@@ -13,10 +13,10 @@ public abstract class Drone {
     protected double positionX;
     protected double positionY;
 
-    public Drone(String n){
+    public Drone(String n) {
         this.name = n;
-        x = 0.0;
-        y = 0.0;
+        x = -1.95;
+        y = 34.7;
         battery = 100;
     }
     // get position from the message

@@ -13,7 +13,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 public class AirDrone extends Drone {
 
@@ -42,22 +41,37 @@ public class AirDrone extends Drone {
 
     @Override
     public void moveTo() {
-        // simple travel function
-        //TODO: add the final position limitation
-        while (x < positionX && y < positionY) {
-            x = x + 10;
-            y = y + 10;
+
+        while (x != positionX || y != positionY) {
+
+            // latitude travel
+            if(x + 10 < positionX)
+                x = x + 10;
+            else if (x < positionX && x + 10 >positionX) x = positionX;
+            else if(x - 10> positionX) x = x - 10;
+            else x = positionX;
+
+            //longitude travel
+            if(y + 10 < positionY)
+                y = y + 10;
+            else if (y < positionY && y + 10 >positionY) y = positionY;
+            else if(y - 10> positionY) y = y - 10;
+            else y = positionY;
+
             battery -= 1;
             try {
                 sendInfo();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            //interval time (maybe not needed)
+            /*
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
 
@@ -88,13 +102,13 @@ public class AirDrone extends Drone {
 
     public void sendInfo() throws Exception {
         JSONObject positionToSend = new JSONObject();
-        positionToSend.put("latitude", -1.948754);
-        positionToSend.put("longitude", 34.700409);
+        positionToSend.put("latitude", this.x);
+        positionToSend.put("longitude", this.y);
 
         String sendThisJson = positionToSend.toString();
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
-        String thisDroneIdentity = "123";
+        String thisDroneIdentity = this.name;
         String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
         client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
     }
