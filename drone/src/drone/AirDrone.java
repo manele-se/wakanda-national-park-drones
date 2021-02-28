@@ -16,12 +16,15 @@ import java.nio.charset.StandardCharsets;
 
 public class AirDrone extends Drone {
 
+    // mqtt basic setting
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-drone";
     public static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
     IMqttClient client = null;
 
     public AirDrone(String n) {
         super(n);
+
+        //connect with the public broker
         try {
             this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
         } catch (MqttException e) {
@@ -39,6 +42,7 @@ public class AirDrone extends Drone {
         }
     }
 
+    // 'travel' around the virtual park
     @Override
     public void moveTo() {
 
@@ -60,7 +64,7 @@ public class AirDrone extends Drone {
 
             battery -= 1;
             try {
-                sendInfo();
+                sendLoInfo();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -81,15 +85,6 @@ public class AirDrone extends Drone {
     }
 
     @Override
-    public void sendInformation() {
-        String x = Double.toString(this.x);
-        String y = Double.toString(this.y);
-        // this format just for testing
-        String s = "drone" + this.name + "x:" + x + "y:" + y + "battery" + this.battery;
-        System.out.println(s);
-    }
-
-    @Override
     public void sendSensorSignal() {
 
     }
@@ -100,7 +95,8 @@ public class AirDrone extends Drone {
     }
 
 
-    public void sendInfo() throws Exception {
+    @Override
+    public void sendLoInfo() throws Exception {
         JSONObject positionToSend = new JSONObject();
         positionToSend.put("latitude", this.x);
         positionToSend.put("longitude", this.y);
