@@ -17,13 +17,12 @@ public class Main {
     public static void main(String[] args) throws MqttException {
 
 
-        AirDrone a1 = new AirDrone();
-        a1.setName("alice");
+        AirDrone a1 = new AirDrone("alice");
         //a1.setAlive();
         a1.setPosition(300, 300);
         a1.moveTo();
 
-        IMqttClient mqttClient = new MqttClient("tcp://localhost:1883", PUBLISHER_ID);
+        IMqttClient mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);

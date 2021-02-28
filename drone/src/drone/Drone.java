@@ -2,19 +2,23 @@ package drone;
 
 //abstract class Drone
 
-import java.util.concurrent.TimeUnit;
-
 public abstract class Drone {
     // the position of Drones
-    protected double x = 0;
-    protected double y = 0;
+    protected double x;
+    protected double y;
     protected String name;
-    protected int battery = 100;
+    protected int battery;
 
     // the position of missions
     protected double positionX;
     protected double positionY;
 
+    public Drone(String n){
+        this.name = n;
+        x = 0.0;
+        y = 0.0;
+        battery = 100;
+    }
     // get position from the message
     // the message will be translated in the other function
     public void setPosition(double x, double y) {

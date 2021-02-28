@@ -16,8 +16,8 @@ public class AirDrone extends Drone {
     public static final String DRONES_LOCATION_TOPICS = "drone/+/location";
     IMqttClient client;
 
-    public AirDrone() {
-
+    public AirDrone(String n) {
+        super(n);
     }
 
     @Override
@@ -61,9 +61,6 @@ public class AirDrone extends Drone {
 
     }
 
-    public AirDrone(IMqttClient client){
-        this.client = client;
-    }
     public MqttMessage Information() {
         String x = Double.toString(this.x);
         String y = Double.toString(this.y);
