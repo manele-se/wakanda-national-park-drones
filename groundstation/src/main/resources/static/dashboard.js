@@ -3,33 +3,42 @@ let map;
 const markers = { };
 
 async function update() {
+    // Get all map objects from the API
     const response = await fetch(url);
     const json = await response.json();
-    const existingMarkerKeys = new Set(Object.keys(markers));
-    console.log({existingMarkerKeys});
 
+    // The server returns this structure - one object for each drone (or ranger, or fire, or ...):
+    // {
+    //   "7": {
+    //      "latitude": 123.456,
+    //      "longitude": -1.42
+    //   },
+    //   "13": {
+    //      "latitude": 23.456,
+    //      "longitude": 7.42
+    //   }
+    // }
+
+    // Loop over all object keys in the data from the server
     for (var key in json) {
+        // Get the info about this map object
+        const info = json[key];
+
+        // Get a lat/lng position for Google Maps API
+        const position = { lat: info.latitude, lng: info.longitude }
+
         if (key in markers) {
             console.log(`Updating position of ${key}`);
-            existingMarkerKeys.delete(key);
+            markers[key].setPosition(position);
         }
         else {
-            const info = json[key];
-            const position = { lat: info.latitude, lng: info.longitude }
+            console.log(`Adding ${key}`);
             markers[key] = new google.maps.Marker({
                 position,
                 map,
-                title: key}
-            );
-            console.log(`Adding ${key}`);
+                title: key
+            });
         }
-    }
-
-    console.log('Markers to remove', existingMarkerKeys);
-    for (var keyToRemove of existingMarkerKeys) {
-        const markerToRemove = markers[keyToRemove];
-        markerToRemove.setMap(null);
-        delete markers[keyToRemove];
     }
 
     window.setTimeout(update, 5000);

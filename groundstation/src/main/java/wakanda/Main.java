@@ -19,10 +19,9 @@ public class Main {
 
     // Drones could send their locations using this topic pattern, for example:
     // chalmers/dat220/group1/drone/1/location
-    // chalmers/dat220/group1/drone/72/location
-    // chalmers/dat220/group1/drone/bob/location
-    // chalmers/dat220/group1/drone/alice/location
-    // The fourth part of the topic is the identity (name) of the drone
+    // chalmers/dat220/group1/drone/2/location
+    // chalmers/dat220/group1/drone/3351239/location
+    // The fourth part of the topic is the identity (number) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
 
@@ -61,16 +60,24 @@ public class Main {
 
             System.out.println("Location of drone '" + droneId + "': " + latitude + "," + longitude);
 
-            mappedObjects.put(droneId, new DroneInfo(latitude, longitude));
+            mappedObjects.put(droneId, new MapObject(latitude, longitude));
         });
 
-        //String sendThisJson = "{\"latitude\":-1.948754,\"longitude\":34.700409}";
-        //byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-        //mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, false);
+        // Test sending a location for drone '123', in the middle of Serengeti.
+        // This is how sending locations for drone should work.
+        // The JSONObject should contain the latitude and longitude for the drone, stored in variables.
+        JSONObject positionToSend = new JSONObject();
+        positionToSend.put("latitude", -1.948754);
+        positionToSend.put("longitude", 34.700409);
 
-        //sendTheseBytes = new byte[0];
-        //mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, true);
+        String sendThisJson = positionToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
+        String thisDroneIdentity = "123";
+        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
+        mqttClient.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
+
+        // Start the Spring Boot Web application
         SpringApplication.run(WebServer.class, args);
     }
 }

@@ -1,6 +1,6 @@
 package wakanda;
 
-public abstract class MapObject {
+public class MapObject {
     private double latitude;
     private double longitude;
 
@@ -24,6 +24,4 @@ public abstract class MapObject {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-
-    public abstract String getColor();
 }
