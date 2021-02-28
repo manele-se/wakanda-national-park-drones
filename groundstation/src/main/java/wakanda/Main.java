@@ -22,12 +22,12 @@ public class Main {
     // chalmers/dat220/group1/drone/72/location
     // chalmers/dat220/group1/drone/bob/location
     // chalmers/dat220/group1/drone/alice/location
-    // The second part of the topic is the identity (name) of the drone
+    // The fourth part of the topic is the identity (name) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
 
     // Data storage
-    public static Map<String, MapObject> mappedObjects = new HashMap<String, MapObject>();
+    public static final Map<String, MapObject> mappedObjects = new HashMap<>();
 
     public static void main(String[] args) throws MqttException {
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
@@ -64,9 +64,12 @@ public class Main {
             mappedObjects.put(droneId, new DroneInfo(latitude, longitude));
         });
 
-        String sendThisJson = "{\"latitude\":-1.948754,\"longitude\":34.700409}";
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-        mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, false);
+        //String sendThisJson = "{\"latitude\":-1.948754,\"longitude\":34.700409}";
+        //byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+        //mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, false);
+
+        //sendTheseBytes = new byte[0];
+        //mqttClient.publish("chalmers/dat220/group1/drone/y/location", sendTheseBytes, 0, true);
 
         SpringApplication.run(WebServer.class, args);
     }

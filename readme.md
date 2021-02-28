@@ -17,30 +17,23 @@ Each drone should have a couple of different topics:
 
 - `chalmers/dat220/group1/drone/ID/location`
 - `chalmers/dat220/group1/drone/ID/heartbeat`
+- `chalmers/dat220/group1/drone/ID/helprequest`
 - ...
 
 ## Data format
-One suggestion for communication is that we use JSON to package the data. This is a suggestion of different events that drones can send, for example:
+One suggestion for communication is that we use JSON to package the data.
 
 ```
+// For locations:
 {
-  "event_type": "location",
   "latitude": 5.128124,
   "longitude": 14.915432
 }
 ```
 
 ```
+// For drone heartbeats:
 {
-  "event_type": "fire",
-  "latitude": 5.128124,
-  "longitude": 14.915432
-}
-```
-
-```
-{
-  "event_type": "heartbeat",
   "battery_level": 74,
   "latitude": 5.128124,
   "longitude": 14.915432
@@ -48,8 +41,8 @@ One suggestion for communication is that we use JSON to package the data. This i
 ```
 
 ```
+// For help requests:
 {
-  "event_type": "help_request",
   "requested_drone_type": "air",
   "latitude": 5.128124,
   "longitude": 14.915432

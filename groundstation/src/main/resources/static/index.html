@@ -1,33 +1,12 @@
 <html>
     <head>
         <title>Wakanda National Park Dashboard</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>Welcome to Wakanda!</h1>
-        <div id="map" style="width:800px;height:500px"></div>
-        <script>
-            const url = 'http://localhost:8080/api/mapstate';
-            let map;
-            const markers = { };
-
-            async function update() {
-                const response = await fetch(url);
-                const json = await response.json();
-                console.log(json);
-
-            }
-
-            function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: -1.93, lng: 34.76 },
-                    zoom: 8,
-                    mapTypeId: 'satellite'
-                });
-
-                window.setInterval(update, 5000);
-                update();
-            }
-        </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=&v=weekly" async></script>
+        <h1>Wakanda National Park Dashboard</h1>
+        <div id="map"></div>
+        <script src="dashboard.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBz4w_IykUM801jichDokElo_o9iP7YvZg&callback=initMap&libraries=&v=weekly" async></script>
     </body>
 </html>
