@@ -15,7 +15,6 @@ public class Main {
         LandDrone l1 = new LandDrone("bob");
         l1.setPosition(133.6,-90.6);
         l1.moveTo();
-        l1.sendSensorSignal();
 
     }
 }
