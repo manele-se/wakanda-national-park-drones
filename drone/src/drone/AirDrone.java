@@ -14,8 +14,6 @@ public class AirDrone extends Drone {
 
     // mqtt basic setting
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-drone";
-    // public static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
-
 
     public AirDrone(String n) {
         super(n);
