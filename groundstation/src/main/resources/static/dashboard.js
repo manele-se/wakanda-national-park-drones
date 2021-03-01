@@ -41,13 +41,13 @@ async function update() {
         }
     }
 
-    window.setTimeout(update, 5000);
+    window.setTimeout(update, 1000);
 }
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: -1.93, lng: 34.76 },
-        zoom: 8,
+        zoom: 14,
         mapTypeId: 'satellite'
     });
 
