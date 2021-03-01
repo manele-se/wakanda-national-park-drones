@@ -6,20 +6,16 @@ package drone;
 // (e.g. the smoke sensor randomly, but rarely indicates that it senses smoke).
 
 
-import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.json.JSONObject;
-
-import java.nio.charset.StandardCharsets;
 
 public class AirDrone extends Drone {
 
     // mqtt basic setting
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-drone";
-    public static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
-    IMqttClient client = null;
+    // public static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
+
 
     public AirDrone(String n) {
         super(n);
@@ -42,48 +38,14 @@ public class AirDrone extends Drone {
         }
     }
 
-    // 'travel' around the virtual park
-    @Override
-    public void moveTo() {
-
-        while (x != positionX || y != positionY) {
-
-            // latitude travel
-            if(x + 10 < positionX)
-                x = x + 10;
-            else if (x < positionX && x + 10 >positionX) x = positionX;
-            else if(x - 10> positionX) x = x - 10;
-            else x = positionX;
-
-            //longitude travel
-            if(y + 10 < positionY)
-                y = y + 10;
-            else if (y < positionY && y + 10 >positionY) y = positionY;
-            else if(y - 10> positionY) y = y - 10;
-            else y = positionY;
-
-            battery -= 1;
-            try {
-                sendLoInfo();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //interval time (maybe not needed)
-            /*
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-        }
-    }
 
     @Override
     public boolean outOfBounds() {
         return false;
     }
 
+    // sensor
+    // cant find other sensors in the air drone except the camera sensor
     @Override
     public void sendSensorSignal() {
 
@@ -94,18 +56,4 @@ public class AirDrone extends Drone {
 
     }
 
-
-    @Override
-    public void sendLoInfo() throws Exception {
-        JSONObject positionToSend = new JSONObject();
-        positionToSend.put("latitude", this.x);
-        positionToSend.put("longitude", this.y);
-
-        String sendThisJson = positionToSend.toString();
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-
-        String thisDroneIdentity = this.name;
-        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
-        client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
-    }
 }

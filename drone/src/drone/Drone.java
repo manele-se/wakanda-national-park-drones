@@ -2,12 +2,19 @@ package drone;
 
 //abstract class Drone
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+
 public abstract class Drone {
     // the basic information of Drones
     protected double x;
     protected double y;
     protected String name;
     protected int battery;
+
+    IMqttClient client = null;
 
     // the position of location missions
     protected double positionX;
@@ -28,10 +35,53 @@ public abstract class Drone {
     }
 
     // travel function
-    public abstract void moveTo();
+    public void moveTo() {
+        while (x != positionX || y != positionY) {
+
+            // latitude travel
+            if (x + 10.0 < positionX)
+                x = x + 10.0;
+            else if (x < positionX && x + 10.0 > positionX) x = positionX;
+            else if (x - 10.0 > positionX) x = x - 10.0;
+            else x = positionX;
+
+            //longitude travel
+            if (y + 10.0 < positionY)
+                y = y + 10.0;
+            else if (y < positionY && y + 10.0 > positionY) y = positionY;
+            else if (y - 10.0 > positionY) y = y - 10.0;
+            else y = positionY;
+
+            battery -= 1;
+            try {
+                sendLoInfo();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //interval time (maybe not needed)
+            /*
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+        }
+    }
 
     // send location information through broker
-    public abstract void sendLoInfo() throws Exception;
+    public void sendLoInfo() throws Exception {
+        JSONObject positionToSend = new JSONObject();
+        positionToSend.put("latitude", this.x);
+        positionToSend.put("longitude", this.y);
+
+        String sendThisJson = positionToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+        String thisDroneIdentity = this.name;
+        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
+        client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
+    }
 
     //maybe not needed
     // judge whether the drones are out of the map

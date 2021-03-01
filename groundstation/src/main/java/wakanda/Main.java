@@ -1,16 +1,18 @@
 package wakanda;
 
 // Using Paho MQTT library: https://www.baeldung.com/java-mqtt-client
-import org.eclipse.paho.client.mqttv3.*;
-
-// Using JSON-Java: https://www.baeldung.com/java-org-json
-import org.json.*;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.json.JSONObject;
+import org.springframework.boot.SpringApplication;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.SpringApplication;
+// Using JSON-Java: https://www.baeldung.com/java-org-json
 
 public class Main {
 
@@ -24,6 +26,7 @@ public class Main {
     // The fourth part of the topic is the identity (number) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String DRONES_LOCATION_TOPICS = "chalmers/dat220/group1/drone/+/location";
+    private static final String DRONES_SENSOR_TOPICS = "chalmers/dat220/group1/drone/+/temp";
 
     // Data storage
     public static final Map<String, MapObject> mappedObjects = new HashMap<>();
