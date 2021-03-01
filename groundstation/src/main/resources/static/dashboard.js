@@ -11,11 +11,13 @@ async function update() {
     // {
     //   "7": {
     //      "latitude": 123.456,
-    //      "longitude": -1.42
+    //      "longitude": -1.42,
+    //      "markerUrl": "//maps.google.com/mapfiles/kml/pal2/icon54.png"
     //   },
     //   "13": {
     //      "latitude": 23.456,
-    //      "longitude": 7.42
+    //      "longitude": 7.42,
+    //      "markerUrl": "//maps.google.com/mapfiles/ms/micons/firedept.png"
     //   }
     // }
 
@@ -36,7 +38,8 @@ async function update() {
             markers[key] = new google.maps.Marker({
                 position,
                 map,
-                title: key
+                title: key,
+                icon: info.markerUrl
             });
         }
     }
