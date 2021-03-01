@@ -15,12 +15,14 @@ import java.util.Random;
 // this/these person(s) ‘walks’ around in a virtual park.
 // This process should generate data for movement, heart-beat signals (if the person is a ranger).
 public class Ranger {
-    // ranger position
+
+    // ranger basic information
     protected double x;
     protected double y;
     protected String name;
     IMqttClient client = null;
 
+    // ranger publisher_id
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-ranger";
 
     public Ranger(String n){
@@ -44,6 +46,7 @@ public class Ranger {
         }
     }
 
+    // this/these person(s) ‘walks’ around in a virtual park.
     public void travel() {
         Random r = new Random();
 
@@ -51,7 +54,7 @@ public class Ranger {
         int i1 = r.nextInt(10);
         double d1 = r.nextDouble();
         double x1 = i1 * (10 - d1);
-        System.out.println(x1);
+        // double variable retains two decimal places
         BigDecimal temp = new BigDecimal(x1);
         x1 = temp.setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.x = x1;
@@ -60,7 +63,6 @@ public class Ranger {
         int i2 = r.nextInt(10);
         double d2 = r.nextDouble();
         double y1 = i2 * (10 + d2);
-        System.out.println(y1);
         temp = new BigDecimal(y1);
         y1 = temp.setScale(2, RoundingMode.HALF_UP).doubleValue();
         this.y = y1;
@@ -85,7 +87,7 @@ public class Ranger {
                 k = 0;
             }
 
-            //random send information
+            //random send information, maybe don't need randomize
             if (t == 1) {
                 try {
                     sendInformation();
