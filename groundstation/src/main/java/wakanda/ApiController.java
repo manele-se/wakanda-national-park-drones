@@ -11,7 +11,7 @@ import java.util.Map;
 public class ApiController {
     @GetMapping("/mapstate")
     public Map<String, MapObject> getAllMapObjects() {
-        return Main.mappedObjects;
+        return Dashboard.mappedObjects;
     }
 }
 

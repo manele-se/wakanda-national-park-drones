@@ -14,7 +14,7 @@ import java.util.Map;
 
 // Using JSON-Java: https://www.baeldung.com/java-org-json
 
-public class Main {
+public class Dashboard {
 
     // The MQTT identity of the ground station
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-groundstation";
