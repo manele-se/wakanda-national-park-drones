@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="security" />
         <module name="groundstation" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="groundstation" target="14" />
+      <module name="security" target="14" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

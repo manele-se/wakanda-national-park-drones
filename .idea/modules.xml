@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/drone/drone.iml" filepath="$PROJECT_DIR$/drone/drone.iml" />
       <module fileurl="file://$PROJECT_DIR$/groundstation/groundstation.iml" filepath="$PROJECT_DIR$/groundstation/groundstation.iml" />
       <module fileurl="file://$PROJECT_DIR$/human/human.iml" filepath="$PROJECT_DIR$/human/human.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security/security.iml" filepath="$PROJECT_DIR$/security/security.iml" />
       <module fileurl="file://$PROJECT_DIR$/wakanda.iml" filepath="$PROJECT_DIR$/wakanda.iml" />
     </modules>
   </component>
