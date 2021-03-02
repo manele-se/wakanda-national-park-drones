@@ -3,9 +3,22 @@
         <title>Wakanda National Park Dashboard</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
+    <body class="showlogin">
         <h1>Wakanda National Park Dashboard</h1>
-        <div id="map"></div>
+        <main id="map"></main>
+        <main id="login">
+            <h2>Login with personal account</h2>
+            <h3 id="loginerror"></h3>
+            <form>
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" autocomplete="off" required />
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="off" required />
+                <label for="rememberme">Remember me</label>
+                <input id="rememberme" name="rememberme" type="checkbox" />
+                <input type="submit" value="Login" />
+            </form>
+        </main>
         <script src="dashboard.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBz4w_IykUM801jichDokElo_o9iP7YvZg&callback=initMap&libraries=&v=weekly" async></script>
     </body>

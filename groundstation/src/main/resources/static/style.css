@@ -1,4 +1,4 @@
-html, body, h1, #map {
+html, body, h1, main {
     display: block;
     margin: 0;
     padding: 0;
@@ -16,6 +16,46 @@ h1 {
     text-align: center;
 }
 
-#map {
+main {
+    display: none;
     top: 3rem;
+}
+
+body.showmap > main#map {
+    display: block;
+}
+
+body.showlogin > main#login {
+    display: flex;
+}
+
+main#login {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    display: grid;
+    grid-gap: 0.5rem;
+}
+
+label {
+    grid-column: 1/2;
+}
+
+input {
+    grid-column: 2/4;
+}
+
+input[type=checkbox] {
+    grid-column: 2/3;
+}
+
+input[type=submit] {
+    grid-column: 3/4;
+}
+
+#loginerror {
+    color: red;
 }

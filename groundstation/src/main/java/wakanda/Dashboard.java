@@ -16,6 +16,9 @@ import java.util.Map;
 
 public class Dashboard {
 
+    // The MQTT client
+    public static IMqttClient mqttClient;
+
     // The MQTT identity of the ground station
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-groundstation";
 
@@ -46,7 +49,7 @@ public class Dashboard {
         objectTypeMarkers.put("ranger", RANGER_MARKER_URL);
 
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
-        IMqttClient mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
+        mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);

@@ -1,10 +1,11 @@
-const url = 'http://localhost:8080/api/mapstate';
+const MAP_STATE_URL = 'http://localhost:8080/api/mapstate';
+const SIGNIN_URL = 'http://localhost:8080/api/signin';
 let map;
 const markers = { };
 
 async function update() {
     // Get all map objects from the API
-    const response = await fetch(url);
+    const response = await fetch(MAP_STATE_URL);
     const json = await response.json();
 
     // The server returns this structure - one object for each drone (or ranger, or fire, or ...):
@@ -56,3 +57,27 @@ function initMap() {
 
     update();
 }
+
+const form = document.querySelector('#login > form');
+form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch(SIGNIN_URL, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `username=${username}&password=${password}`
+    });
+    const result = await response.text();
+    if (result === 'signedIn') {
+        document.body.className = 'showmap';
+        document.getElementById('loginerror').textContent = "";
+    }
+    else {
+        document.getElementById('loginerror').textContent = "ACCESS DENIED!";
+    }
+});
