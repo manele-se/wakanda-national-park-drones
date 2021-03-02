@@ -9,11 +9,11 @@ public class Main {
 
         AirDrone a1 = new AirDrone("alice");
         //a1.setAlive();
-        a1.setPosition(138.2, 124.6);
+        a1.setPosition(-1.92, 34.71);
         a1.moveTo();
 
         LandDrone l1 = new LandDrone("bob");
-        l1.setPosition(133.6,-90.6);
+        l1.setPosition(-1.93,34.73);
         l1.moveTo();
 
     }
