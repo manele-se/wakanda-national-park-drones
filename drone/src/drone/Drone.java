@@ -104,6 +104,20 @@ public abstract class Drone {
 
     public abstract void sendSensorSignal();
 
+    public void sendPhoto() throws MqttException {
+        JSONObject positionToSend = new JSONObject();
+
+        // the second variable may need to be changed according to the image recognition function
+        positionToSend.put("photo", true);
+
+        String sendThisJson = positionToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+        String thisDroneIdentity = this.name;
+        String thisDronePhotoTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/photo";
+        client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
+    }
+
     //maybe not needed
     // judge whether the drones are out of the map
     public abstract boolean outOfBounds();
