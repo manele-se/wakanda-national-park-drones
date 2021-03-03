@@ -20,13 +20,23 @@ public class ApiController {
     private static final String SIGNIN_TOPIC = "chalmers/dat220/group1/signin";
 
     // The security component sends a message on this topic to return the results of a login attempt
-    private static final String ACCESS_TOPIC = "chalmers/dat220/group1/access/";
+    private static final String ACCESS_TOPIC = "chalmers/dat220/group1/access";
 
+    // API method for getting all map objects
+    // GET /api/mapstate
+    // No parameters
+    // Returns a JSON object with all map objects:
+    // { "drone_bob" : { "latitude": 1.2, "longitude": 2.3 } }
     @GetMapping("/mapstate")
     public Map<String, MapObject> getAllMapObjects() {
         return Dashboard.mappedObjects;
     }
 
+    // API method for signing in
+    // Publishes a message to the Access Control component, and waits for a response.
+    // See the SecurityProgram for more details.
+    // POST /api/signin
+    // Returns "signedIn", "denied", "timeout" or "error"
     @PostMapping("/signin")
     public String signin(String username, String password) throws MqttException {
 
@@ -42,6 +52,7 @@ public class ApiController {
 
         // Send username and password through MQTT to the Access Control
         JSONObject signinRequest = new JSONObject();
+        //password in a "real world scenario" should be encrypted
         signinRequest.put("username", username);
         signinRequest.put("password", password);
         String sendThisJson = signinRequest.toString();

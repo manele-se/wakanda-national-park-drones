@@ -9,7 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class SecurityProgram {
+public class AccessControl {
     // The MQTT identity of the security component
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-security";
 
@@ -17,7 +17,7 @@ public class SecurityProgram {
     private static final String SIGNIN_TOPIC = "chalmers/dat220/group1/signin";
 
     // The security component sends a message on this topic to return the results of a login attempt
-    private static final String ACCESS_TOPIC = "chalmers/dat220/group1/access/";
+    private static final String ACCESS_TOPIC = "chalmers/dat220/group1/access";
 
     public static void main(String[] args) throws MqttException {
         // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
