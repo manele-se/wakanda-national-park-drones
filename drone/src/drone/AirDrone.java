@@ -10,8 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.util.concurrent.TimeUnit;
-
 public class AirDrone extends Drone {
 
     // mqtt basic setting
@@ -38,40 +36,6 @@ public class AirDrone extends Drone {
         }
     }
 
-    @Override
-    public void moveTo() {
-        while (x != positionX || y != positionY) {
-
-            // latitude travel
-            if (x + 0.001 < positionX)
-                x = x + 0.001;
-            else if (x < positionX && x + 0.001 > positionX) x = positionX;
-            else if (x - 0.001 > positionX) x = x - 0.001;
-            else x = positionX;
-
-            //longitude travel
-            if (y + 0.001 < positionY)
-                y = y + 0.001;
-            else if (y < positionY && y + 0.001 > positionY) y = positionY;
-            else if (y - 0.001 > positionY) y = y - 0.001;
-            else y = positionY;
-
-            battery -= 1;
-            try {
-                sendLoInfo();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //interval time (maybe not needed)
-
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 
     @Override

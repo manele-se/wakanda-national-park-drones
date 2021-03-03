@@ -6,6 +6,7 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Drone {
     // the basic information of Drones
@@ -35,7 +36,40 @@ public abstract class Drone {
     }
 
     // travel function
-    public abstract void moveTo();
+    public void moveTo(){
+        while (x != positionX || y != positionY) {
+
+            // latitude travel
+            if (x + 0.001 < positionX)
+                x = x + 0.001;
+            else if (x < positionX && x + 0.001 > positionX) x = positionX;
+            else if (x - 0.001 > positionX) x = x - 0.001;
+            else x = positionX;
+
+            //longitude travel
+            if (y + 0.001 < positionY)
+                y = y + 0.001;
+            else if (y < positionY && y + 0.001 > positionY) y = positionY;
+            else if (y - 0.001 > positionY) y = y - 0.001;
+            else y = positionY;
+
+            battery -= 1;
+            try {
+                sendLoInfo();
+                sendSensorSignal();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //interval time (maybe not needed)
+
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // send location information through broker
     public void sendLoInfo() throws Exception {

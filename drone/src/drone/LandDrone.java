@@ -35,41 +35,6 @@ public class LandDrone extends Drone {
         }
     }
 
-    @Override
-    public void moveTo() {
-        while (x != positionX || y != positionY) {
-
-            // latitude travel
-            if (x + 10.0 < positionX)
-                x = x + 10.0;
-            else if (x < positionX && x + 10.0 > positionX) x = positionX;
-            else if (x - 10.0 > positionX) x = x - 10.0;
-            else x = positionX;
-
-            //longitude travel
-            if (y + 10.0 < positionY)
-                y = y + 10.0;
-            else if (y < positionY && y + 10.0 > positionY) y = positionY;
-            else if (y - 10.0 > positionY) y = y - 10.0;
-            else y = positionY;
-
-            battery -= 1;
-            try {
-                sendSensorSignal();
-                sendLoInfo();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //interval time (maybe not needed)
-            /*
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-        }
-    }
 
     @Override
     public boolean outOfBounds() {
