@@ -3,6 +3,7 @@ package drone;
 //abstract class Drone
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,22 @@ public abstract class Drone {
         this.positionY = y;
     }
 
+    public void sendBattery(){
+        this.battery -= 1;
+        JSONObject positionToSend = new JSONObject();
+        positionToSend.put("battery", this.battery);
+
+        String sendThisJson = positionToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+        String thisDroneIdentity = this.name;
+        String thisDroneBatteryTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/battery";
+        try {
+            client.publish(thisDroneBatteryTopic, sendTheseBytes, 0, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
     // travel function
     public void moveTo(){
         while (x != positionX || y != positionY) {
@@ -53,9 +70,9 @@ public abstract class Drone {
             else if (y - 0.001 > positionY) y = y - 0.001;
             else y = positionY;
 
-            battery -= 1;
             try {
-                sendLoInfo();
+                sendLocation();
+                sendBattery();
                 sendSensorSignal();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,7 +89,7 @@ public abstract class Drone {
     }
 
     // send location information through broker
-    public void sendLoInfo() throws Exception {
+    public void sendLocation() throws Exception {
         JSONObject positionToSend = new JSONObject();
         positionToSend.put("latitude", this.x);
         positionToSend.put("longitude", this.y);
@@ -85,6 +102,8 @@ public abstract class Drone {
         client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
     }
 
+    public abstract void sendSensorSignal();
+
     //maybe not needed
     // judge whether the drones are out of the map
     public abstract boolean outOfBounds();
@@ -95,7 +114,6 @@ public abstract class Drone {
     }
 
     // send signal of sensors
-    public abstract void sendSensorSignal();
 
     // translate the messages from the ground station
     public abstract void getMissions();
