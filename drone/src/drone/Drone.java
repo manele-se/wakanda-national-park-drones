@@ -16,6 +16,10 @@ public abstract class Drone {
     protected String name;
     protected int battery;
 
+    // the name of drones that working in tandem
+    protected String partner;
+
+    // initial mqttclient
     IMqttClient client = null;
 
     // the position of location missions
@@ -52,6 +56,7 @@ public abstract class Drone {
             e.printStackTrace();
         }
     }
+
     // travel function
     public void moveTo(){
         while (x != positionX || y != positionY) {
@@ -78,8 +83,6 @@ public abstract class Drone {
                 e.printStackTrace();
             }
 
-            //interval time (maybe not needed)
-
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
@@ -102,15 +105,17 @@ public abstract class Drone {
         client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
     }
 
+    // send signal of sensors
     public abstract void sendSensorSignal();
 
+    // send photo information through broker
     public void sendPhoto() throws MqttException {
-        JSONObject positionToSend = new JSONObject();
+        JSONObject photoToSend = new JSONObject();
 
         // the second variable may need to be changed according to the image recognition function
-        positionToSend.put("photo", true);
+        photoToSend.put("photo", true);
 
-        String sendThisJson = positionToSend.toString();
+        String sendThisJson = photoToSend.toString();
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisDroneIdentity = this.name;
@@ -118,7 +123,23 @@ public abstract class Drone {
         client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
     }
 
-    //maybe not needed
+    // no idea about how drones are assigned co-working partners
+    // ground station gives information or other methods?
+    // Or, we can use this function to simply fake it.
+    public void workInTandem(String n) throws MqttException {
+        this.partner = n;
+        JSONObject tandemToSend = new JSONObject();
+        tandemToSend.put("partner", this.partner);
+
+        String sendThisJson = tandemToSend.toString();
+        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+        String thisDroneIdentity = this.name;
+        String thisDronePartnerTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/partner";
+        client.publish(thisDronePartnerTopic, sendTheseBytes, 0, false);
+    }
+
+    // maybe not needed
     // judge whether the drones are out of the map
     public abstract boolean outOfBounds();
 
@@ -126,8 +147,6 @@ public abstract class Drone {
     // wake up drone
     public void setAlive() {
     }
-
-    // send signal of sensors
 
     // translate the messages from the ground station
     public abstract void getMissions();
