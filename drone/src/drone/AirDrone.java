@@ -1,9 +1,5 @@
 package drone;
 
-// A component (implemented as a separate process) that simulates one (or more) drone(s).
-// This/these drone(s) can be air-borne and land-based drone(s) and can ‘travel’ around the virtual park.
-// This process should generate data for movement, heart-beat signal, work-in-tandem signals, sensor signals
-// (e.g. the smoke sensor randomly, but rarely indicates that it senses smoke).
 
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
