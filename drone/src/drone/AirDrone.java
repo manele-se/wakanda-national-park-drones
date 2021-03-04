@@ -2,6 +2,7 @@ package drone;
 
 
 
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -16,17 +17,7 @@ public class AirDrone extends Drone {
 
         //connect with the public broker
         try {
-            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        try {
-            client.connect(options);
+            this.client = Communication.connect(PUBLISHER_ID);
         } catch (MqttException e) {
             e.printStackTrace();
         }

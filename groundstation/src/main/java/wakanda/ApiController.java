@@ -1,5 +1,6 @@
 package wakanda;
 
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +46,9 @@ public class ApiController {
 
         Dashboard.mqttClient.subscribe(ACCESS_TOPIC, 0, (topic, msg) -> {
             Dashboard.mqttClient.unsubscribe(ACCESS_TOPIC);
+            String payload = Communication.getString(msg);
             System.out.println("Received response from Security component");
-            response.set(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            response.set(payload);
             receivedResponse.release();
         });
 
@@ -55,10 +57,9 @@ public class ApiController {
         //password in a "real world scenario" should be encrypted
         signinRequest.put("username", username);
         signinRequest.put("password", password);
-        String sendThisJson = signinRequest.toString();
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
         System.out.println("Sending request to Security component");
-        Dashboard.mqttClient.publish(SIGNIN_TOPIC, sendTheseBytes, 0, false);
+        Communication.send(Dashboard.mqttClient, SIGNIN_TOPIC, signinRequest);
         System.out.println("Request to Security component was sent!");
 
         try {

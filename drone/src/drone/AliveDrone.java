@@ -9,7 +9,7 @@ public class AliveDrone {
 
         //System.out.println(args[0]);
         //System.out.println(args[1]);
-        if (args[0] == "0"){
+        if (args[0].equals("0")){
             AirDrone a1 = new AirDrone(args[1]);
             a1.setPosition(-1.92, 34.71);
             a1.moveTo();

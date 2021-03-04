@@ -1,6 +1,7 @@
 package wakanda;
 
 // Using Paho MQTT library: https://www.baeldung.com/java-mqtt-client
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -32,6 +33,7 @@ public class Dashboard {
     // The fourth part of the topic is the identity (number) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String LOCATION_TOPICS = "chalmers/dat220/group1/+/+/location";
+    private static final String TANDEM_TOPICS = "chalmers/dat220/group1/drone/+/partner";
 
     // Marker images
     private static final String DRONE_MARKER_URL = "//maps.google.com/mapfiles/kml/pal4/icon45.png";
@@ -59,14 +61,7 @@ public class Dashboard {
 
         // When there is a message from a drone about location:
         mqttClient.subscribe(LOCATION_TOPICS, 0, (topic, msg) -> {
-            // Get the raw payload as a stream of bytes
-            byte[] rawPayload = msg.getPayload();
-
-            // Convert the stream of bytes to a string, containing JSON
-            String jsonPayload = new String(rawPayload, StandardCharsets.UTF_8);
-
-            // Parse the JSON string into a JsonObject
-            JSONObject payload = new JSONObject(jsonPayload);
+            JSONObject payload = Communication.getJson(msg);
 
             // Get latitude and longitude from the payload
             double latitude = payload.getDouble("latitude");

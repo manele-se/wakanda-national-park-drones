@@ -1,3 +1,4 @@
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -20,13 +21,7 @@ public class AccessControl {
     private static final String ACCESS_TOPIC = "chalmers/dat220/group1/access";
 
     public static void main(String[] args) throws MqttException {
-        // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
-        IMqttClient mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        mqttClient.connect(options);
+        IMqttClient mqttClient = Communication.connect(PUBLISHER_ID);
 
         // Thread-safe response handling. It is not possible to publish messages from the
         // same thread as the subscriber. So we use a semaphore and an atomic string
@@ -39,9 +34,7 @@ public class AccessControl {
             System.out.println("Received message on topic " + SIGNIN_TOPIC);
 
             // Get a JSON object from the payload
-            byte[] rawPayload = msg.getPayload();
-            String jsonPayload = new String(rawPayload, StandardCharsets.UTF_8);
-            JSONObject payload = new JSONObject(jsonPayload);
+            JSONObject payload = Communication.getJson(msg);
 
             String username = payload.getString("username");
             String password = payload.getString("password");
@@ -80,8 +73,7 @@ public class AccessControl {
         while (true) {
             try {
                 responseSemaphore.acquire();
-                byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(response.get()).array();
-                mqttClient.publish(ACCESS_TOPIC, sendTheseBytes, 0, false);
+                Communication.send(mqttClient, ACCESS_TOPIC, response.get());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
