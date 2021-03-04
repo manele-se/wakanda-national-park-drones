@@ -30,10 +30,10 @@ public class Dashboard {
     // The fourth part of the topic is the identity (number) of the drone
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String LOCATION_TOPICS = "chalmers/dat220/group1/+/+/location";
-    private static final String TANDEM_TOPICS = "chalmers/dat220/group1/drone/+/partner";
-
+    private static final String TANDEM_TOPICS = "chalmers/dat220/group1/+/+/partner";
     // Marker images
-    private static final String DRONE_MARKER_URL = "//maps.google.com/mapfiles/kml/pal4/icon45.png";
+    private static final String LANDDRONE_MARKER_URL = "//maps.google.com/mapfiles/kml/pal4/icon45.png";
+    private static final String AIRDRONE_MARKER_URL = "//maps.google.com/mapfiles/ms/icons/helicopter.png";
     private static final String RANGER_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/police.png";
     private static final String UNKNOWN_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/question.png";
     private static final String FIRE_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/firedept.png;";
@@ -46,7 +46,8 @@ public class Dashboard {
 
     public static void main(String[] args) throws MqttException {
         // Create a map of marker urls per object type
-        objectTypeMarkers.put("drone", DRONE_MARKER_URL);
+        objectTypeMarkers.put("airdrone", AIRDRONE_MARKER_URL);
+        objectTypeMarkers.put("landdrone", LANDDRONE_MARKER_URL);
         objectTypeMarkers.put("ranger", RANGER_MARKER_URL);
 
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
@@ -75,16 +76,21 @@ public class Dashboard {
             locationChanged(objectType, objectId, latitude, longitude);
         });
 
+        // Subscribe to information about drones working in tandem
         mqttClient.subscribe(TANDEM_TOPICS, 0, (topic, msg) -> {
-            // Get the object identity
+            // Get the drone's identity
             // First split the topic into parts
             String[] topicParts = topic.split("/");
+            String objectType = topicParts[3];
             String objectId = topicParts[4];
+            String sender = objectType + "_" + objectId;
 
+            // Get the partner's identity
             JSONObject json = Communication.getJson(msg);
+            System.out.println(json.toString());
             String partner = json.getString("partner");
 
-            tandemChanged(objectId, partner);
+            tandemChanged(sender, partner);
         });
 
         // We should close the MQTT connection properly when the program shuts down
@@ -129,11 +135,10 @@ public class Dashboard {
     }
 
     private static void tandemChanged(String sender, String partner) {
-        String key = "drone_" + sender;
-        String partnerKey = "drone_" + partner;
-        tandemMap.put(key, partnerKey);
-        if (mappedObjects.containsKey(key)) {
-            MapObject current = mappedObjects.get(key);
+        System.out.println("tandemChanges(" + sender + ", " + partner + ")");
+        tandemMap.put(sender, partner);
+        if (mappedObjects.containsKey(sender)) {
+            MapObject current = mappedObjects.get(sender);
             current.setPartner(partner);
         }
     }

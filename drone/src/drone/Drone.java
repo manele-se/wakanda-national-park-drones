@@ -7,6 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Drone {
@@ -28,8 +29,9 @@ public abstract class Drone {
 
     public Drone(String n) {
         this.name = n;
-        x = -1.95; //latitude
-        y = 34.7; // longitude
+        Random random = new Random();
+        x = random.nextDouble() * 0.06 -1.9638; //latitude
+        y = random.nextDouble() * 0.08 + 34.699; // longitude
         battery = 100;
     }
 
@@ -100,7 +102,8 @@ public abstract class Drone {
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisDroneIdentity = this.name;
-        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
+        String thisDroneType = this.getClass().getSimpleName().toLowerCase();
+        String thisDroneLocationTopic = "chalmers/dat220/group1/" + thisDroneType + "/" + thisDroneIdentity + "/location";
         client.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);
     }
 
@@ -118,7 +121,8 @@ public abstract class Drone {
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisDroneIdentity = this.name;
-        String thisDronePhotoTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/photo";
+        String thisDroneType = this.getClass().getSimpleName().toLowerCase();
+        String thisDronePhotoTopic = "chalmers/dat220/group1/" + thisDroneType + "/" + thisDroneIdentity + "/photo";
         client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
     }
 
@@ -134,7 +138,9 @@ public abstract class Drone {
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisDroneIdentity = this.name;
-        String thisDronePartnerTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/partner";
+        String thisDroneType = this.getClass().getSimpleName().toLowerCase();
+        String thisDronePartnerTopic = "chalmers/dat220/group1/" + thisDroneType +"/" + thisDroneIdentity + "/partner";
+        System.out.println(name + " is working in tandem with " + n);
         client.publish(thisDronePartnerTopic, sendTheseBytes, 0, false);
     }
 

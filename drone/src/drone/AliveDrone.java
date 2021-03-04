@@ -3,6 +3,8 @@ package drone;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
+import java.util.Random;
+
 public class AliveDrone {
 
     // haven't used bash script
@@ -15,17 +17,17 @@ public class AliveDrone {
 
         if (args[0].equals("0")){
             drone = new AirDrone(args[1]);
-            drone.setPosition(-1.92, 34.71);
-            drone.moveTo();
         } else {
             drone = new LandDrone(args[1]);
-            drone.setPosition(-1.93,34.73);
-            drone.moveTo();
         }
 
-        // Work in tandem
+        // Work in tandem is the third argument
         if (args.length >= 3) {
             drone.workInTandem(args[2]);
         }
+
+        Random random = new Random();
+        drone.setPosition(random.nextDouble() * 0.06 -1.9638,random.nextDouble() * 0.08 + 34.699);
+        drone.moveTo();
     }
 }
