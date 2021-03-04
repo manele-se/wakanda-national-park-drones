@@ -17,7 +17,8 @@ public class AirDrone extends Drone {
 
         //connect with the public broker
         try {
-            this.client = Communication.connect(PUBLISHER_ID);
+            // Each publisher id must be unique - added the drone's name to the end
+            this.client = Communication.connect(PUBLISHER_ID + "-" + n);
         } catch (MqttException e) {
             e.printStackTrace();
         }

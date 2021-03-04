@@ -60,7 +60,6 @@ public abstract class Drone {
     // travel function
     public void moveTo(){
         while (x != positionX || y != positionY) {
-
             // latitude travel
             if (x + 0.001 < positionX)
                 x = x + 0.001;

@@ -19,7 +19,8 @@ public class LandDrone extends Drone {
 
         //connect with the public broker
         try {
-            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
+            // Each publisher id must be unique - added the drone's name to the end
+            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID + "-" + n);
         } catch (MqttException e) {
             e.printStackTrace();
         }

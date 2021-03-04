@@ -30,6 +30,7 @@ public class ApiController {
     // { "drone_bob" : { "latitude": 1.2, "longitude": 2.3 } }
     @GetMapping("/mapstate")
     public Map<String, MapObject> getAllMapObjects() {
+        System.out.println("API request mapstate");
         return Dashboard.mappedObjects;
     }
 

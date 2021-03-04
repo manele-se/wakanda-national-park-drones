@@ -2,10 +2,7 @@ package wakanda;
 
 // Using Paho MQTT library: https://www.baeldung.com/java-mqtt-client
 import communication.Communication;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.*;
 import org.json.JSONObject;
 import org.springframework.boot.SpringApplication;
 
@@ -43,10 +40,12 @@ public class Dashboard {
 
     // Data storage
     public static final Map<String, MapObject> mappedObjects = new HashMap<>();
+    public static final Map<String, String> tandemMap = new HashMap<>();
+
+    private static final Map<String, String> objectTypeMarkers = new HashMap<>();
 
     public static void main(String[] args) throws MqttException {
         // Create a map of marker urls per object type
-        Map<String, String> objectTypeMarkers = new HashMap<>();
         objectTypeMarkers.put("drone", DRONE_MARKER_URL);
         objectTypeMarkers.put("ranger", RANGER_MARKER_URL);
 
@@ -61,23 +60,31 @@ public class Dashboard {
 
         // When there is a message from a drone about location:
         mqttClient.subscribe(LOCATION_TOPICS, 0, (topic, msg) -> {
+            // Get the object identity
+            // First split the topic into parts
+            String[] topicParts = topic.split("/");
+            String objectType = topicParts[3];
+            String objectId = topicParts[4];
+
             JSONObject payload = Communication.getJson(msg);
 
             // Get latitude and longitude from the payload
             double latitude = payload.getDouble("latitude");
             double longitude = payload.getDouble("longitude");
 
-            // Get the drone identity
+            locationChanged(objectType, objectId, latitude, longitude);
+        });
+
+        mqttClient.subscribe(TANDEM_TOPICS, 0, (topic, msg) -> {
+            // Get the object identity
             // First split the topic into parts
             String[] topicParts = topic.split("/");
-            String objectType = topicParts[3];
             String objectId = topicParts[4];
 
-            System.out.println("Location of " + objectType + " '" + objectId + "': " + latitude + "," + longitude);
+            JSONObject json = Communication.getJson(msg);
+            String partner = json.getString("partner");
 
-            String mapObjectKey = objectType + "_" + objectId;
-            String markerUrl = objectTypeMarkers.getOrDefault(objectType, UNKNOWN_MARKER_URL);
-            mappedObjects.put(mapObjectKey, new MapObject(latitude, longitude, markerUrl));
+            tandemChanged(objectId, partner);
         });
 
         // We should close the MQTT connection properly when the program shuts down
@@ -111,5 +118,23 @@ public class Dashboard {
 
         // Start the Spring Boot Web application
         SpringApplication.run(WebServer.class, args);
+    }
+
+    private static void locationChanged(String objectType, String objectId, double latitude, double longitude) {
+        System.out.println("Location of " + objectType + " '" + objectId + "': " + latitude + "," + longitude);
+        String mapObjectKey = objectType + "_" + objectId;
+        String markerUrl = objectTypeMarkers.getOrDefault(objectType, UNKNOWN_MARKER_URL);
+        String currentPartner = tandemMap.getOrDefault(mapObjectKey, null);
+        mappedObjects.put(mapObjectKey, new MapObject(latitude, longitude, markerUrl, currentPartner));
+    }
+
+    private static void tandemChanged(String sender, String partner) {
+        String key = "drone_" + sender;
+        String partnerKey = "drone_" + partner;
+        tandemMap.put(key, partnerKey);
+        if (mappedObjects.containsKey(key)) {
+            MapObject current = mappedObjects.get(key);
+            current.setPartner(partner);
+        }
     }
 }

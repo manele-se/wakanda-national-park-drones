@@ -4,11 +4,13 @@ public class MapObject {
     private double latitude;
     private double longitude;
     private String markerUrl;
+    private String partner;
 
-    public MapObject(double latitude, double longitude, String markerUrl) {
+    public MapObject(double latitude, double longitude, String markerUrl, String partner) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.markerUrl = markerUrl;
+        this.partner = partner;
     }
 
     public double getLatitude() {
@@ -31,7 +33,15 @@ public class MapObject {
         return markerUrl;
     }
 
-    public void setMarkerUrl(String color) {
-        this.markerUrl = color;
+    public void setMarkerUrl(String markerUrl) {
+        this.markerUrl = markerUrl;
+    }
+
+    public String getPartner() {
+        return partner;
+    }
+
+    public void setPartner(String partner) {
+        this.partner = partner;
     }
 }
