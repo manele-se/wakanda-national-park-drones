@@ -28,11 +28,11 @@ public class AliveDrone {
 
         // Considering the logic of travel and moveTo, thought it would be like this
         // pseudo code
-        // - in drone:
+        //
         // subscribe the mqtt from mission handler{
         //  use the translate function to set drones position
         // }
-        // - in the main function/ Drone:
+        //
         // while(true){
         //  while(timeToTravel()){ // continuous to check whether the drone has a mission
         //      travel();
