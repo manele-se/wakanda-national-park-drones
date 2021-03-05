@@ -11,6 +11,7 @@ public class AliveDrone {
     // thought like this
     public static void main(String[] args) throws MqttException {
 
+        /*
         System.out.println(args[0]);
         System.out.println(args[1]);
         Drone drone;
@@ -25,8 +26,10 @@ public class AliveDrone {
         if (args.length >= 3) {
             drone.workInTandem(args[2]);
         }
-
+        */
+        AirDrone drone = new AirDrone("alice");
         Random random = new Random();
+        if(drone.timeToTravel())
         drone.setPosition(random.nextDouble() * 0.06 -1.9638,random.nextDouble() * 0.08 + 34.699);
         drone.moveTo();
     }

@@ -24,8 +24,8 @@ public abstract class Drone {
     IMqttClient client = null;
 
     // the position of location missions
-    protected double positionX;
-    protected double positionY;
+    protected double positionX = -1;
+    protected double positionY = -1;
 
     public Drone(String n) {
         this.name = n;
@@ -33,6 +33,7 @@ public abstract class Drone {
         x = random.nextDouble() * 0.06 -1.9638; //latitude
         y = random.nextDouble() * 0.08 + 34.699; // longitude
         battery = 100;
+        System.out.println("orginal x:"+ x + "  orginal y:" + y);
     }
 
     // get position from the message
@@ -59,23 +60,64 @@ public abstract class Drone {
         }
     }
 
-    // travel function
+    public boolean timeToTravel(){
+        if(this.positionY == -1 || this.y == this.positionY)
+            return true;
+        else return false;
+    }
+    // when having missions, moving function
     public void moveTo(){
-        while (x != positionX || y != positionY) {
-            // latitude travel
-            if (x + 0.001 < positionX)
-                x = x + 0.001;
-            else if (x < positionX && x + 0.001 > positionX) x = positionX;
-            else if (x - 0.001 > positionX) x = x - 0.001;
-            else x = positionX;
+        while(positionY != -1 && (x != positionX || y != positionY)){
 
-            //longitude travel
-            if (y + 0.001 < positionY)
-                y = y + 0.001;
-            else if (y < positionY && y + 0.001 > positionY) y = positionY;
-            else if (y - 0.001 > positionY) y = y - 0.001;
-            else y = positionY;
+                if (x + 0.001 < positionX)
+                    x = x + 0.001;
+                else if (x < positionX && x + 0.001 > positionX) x = positionX;
+                else if (x - 0.001 > positionX) x = x - 0.001;
+                else x = positionX;
 
+                //longitude travel
+                if (y + 0.001 < positionY)
+                    y = y + 0.001;
+                else if (y < positionY && y + 0.001 > positionY) y = positionY;
+                else if (y - 0.001 > positionY) y = y - 0.001;
+                else y = positionY;
+
+                System.out.println("moving x:" + x + "  moving y: " + y);
+                try {
+                    sendLocation();
+                    sendBattery();
+                    sendSensorSignal();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    // travel function when no missions or mission is over
+    public void travel(){
+        int k =0;
+        Random r = new Random();
+            double m = r.nextDouble();
+            // around, maybe not needed
+            if (k == 0) {
+                x = x + m;
+                k += 1;
+            } else if (k == 1) {
+                y = y + m;
+                k += 1;
+            } else if (k == 2) {
+                x = x - m;
+                k += 1;
+            } else {
+                y = y - m;
+                k = 0;
+            }
             try {
                 sendLocation();
                 sendBattery();
@@ -83,13 +125,12 @@ public abstract class Drone {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            System.out.println("moving x:" + x + "  moving y: " + y);
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     // send location information through broker
