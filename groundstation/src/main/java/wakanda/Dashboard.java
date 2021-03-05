@@ -31,6 +31,8 @@ public class Dashboard {
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String LOCATION_TOPICS = "chalmers/dat220/group1/+/+/location";
     private static final String TANDEM_TOPICS = "chalmers/dat220/group1/+/+/partner";
+    private static final String PHOTOSTREAM = "chalmers/dat220/group1/Images";
+
     // Marker images
     private static final String LANDDRONE_MARKER_URL = "//maps.google.com/mapfiles/kml/pal4/icon45.png";
     private static final String AIRDRONE_MARKER_URL = "//maps.google.com/mapfiles/ms/icons/helicopter.png";
@@ -93,6 +95,21 @@ public class Dashboard {
             tandemChanged(sender, partner);
         });
 
+        mqttClient.subscribe(PHOTOSTREAM, 0, (topic, msg) -> {
+
+            String[] topicParts = topic.split("/");
+            String objectType = topicParts[3];
+            String objectId = topicParts[4];
+            String sender = objectType + "_" + objectId;
+
+            // Get the partner's identity
+            JSONObject json = Communication.getJson(msg);
+            System.out.println(json.toString());
+            String partner = json.getString("partner");
+
+            tandemChanged(sender, partner);
+        });
+
         // We should close the MQTT connection properly when the program shuts down
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -142,4 +159,11 @@ public class Dashboard {
             current.setPartner(partner);
         }
     }
+
+    /**
+     * Assign one mission to a specified drone
+     */
+    private static void assignMission() {
+    }
+
 }

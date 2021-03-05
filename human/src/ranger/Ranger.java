@@ -1,5 +1,7 @@
 package ranger;
 
+import DecisionMaker.Mission;
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -11,6 +13,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
+
 //A component (implemented as a separate process) that ‘simulates’ one (or more) person(s):
 // this/these person(s) ‘walks’ around in a virtual park.
 // This process should generate data for movement, heart-beat signals (if the person is a ranger).
@@ -21,9 +24,12 @@ public class Ranger {
     protected double y;
     protected String name;
     IMqttClient client = null;
+    Mission droneInAction;
 
     // ranger publisher_id
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-ranger";
+    private static final String MISSION_TOPIC = "chalmers/dat220/group1/delegate/";
+
 
     public Ranger(String n){
         this.name = n;
@@ -45,6 +51,16 @@ public class Ranger {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Two parameters constructed created to instantiate a ranger assiging a mission
+     * to one of the drones.
+     */
+    public Ranger (String n, String droneMission ) throws MqttException {
+        this.name = n;
+        SendMissionRequest(droneMission);
+    }
+
 
     // this/these person(s) ‘walks’ around in a virtual park.
     public void travel() {
@@ -101,6 +117,7 @@ public class Ranger {
 
     // send signal
     public void sendInformation() throws MqttException {
+
         JSONObject positionToSend = new JSONObject();
         positionToSend.put("latitude", this.x);
         positionToSend.put("longitude", this.y);
@@ -112,4 +129,29 @@ public class Ranger {
         String thisRangerLocationTopic = "chalmers/dat220/group1/ranger/" + thisRangerIdentity + "/location";
         client.publish(thisRangerLocationTopic, sendTheseBytes, 0, false);
     }
+
+    public void SendMissionRequest(String droneMission ) throws MqttException {
+
+        switch(droneMission) {
+
+            case "surveilArea":
+
+                droneInAction.missionID= Mission.MissionType.SURVEILLANCE;
+                Communication.send(this.client,"chalmers/dat220/group1/delegate",  droneInAction.missionID.toString() +
+                                "?" +
+                                droneInAction.getDrone()
+                         );
+                break;
+            case  "DetectObject":
+                droneInAction.missionID= Mission.MissionType.OBJECTDETECTION;
+                Communication.send(this.client,"chalmers/dat220/group1/delegate", droneInAction.missionID.toString() + "?" +
+                                droneInAction.getDrone()
+                          );
+                break;
+            default:
+                System.out.println( " Mission not accurate  " + this.name);
+                break;
+        }
+    }
+
 }

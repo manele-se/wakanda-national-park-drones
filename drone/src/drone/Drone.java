@@ -4,9 +4,11 @@ package drone;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -14,8 +16,9 @@ public abstract class Drone {
     // the basic information of Drones
     protected double x;
     protected double y;
-    protected String name;
+    public String name;
     protected int battery;
+    protected LinkedList<String> availableDrones;
 
     // the name of drones that working in tandem
     protected String partner;
@@ -33,6 +36,8 @@ public abstract class Drone {
         x = random.nextDouble() * 0.06 -1.9638; //latitude
         y = random.nextDouble() * 0.08 + 34.699; // longitude
         battery = 100;
+        availableDrones.add(n);
+
     }
 
     // get position from the message
@@ -92,6 +97,7 @@ public abstract class Drone {
         }
     }
 
+
     // send location information through broker
     public void sendLocation() throws Exception {
         JSONObject positionToSend = new JSONObject();
@@ -142,6 +148,47 @@ public abstract class Drone {
         String thisDronePartnerTopic = "chalmers/dat220/group1/" + thisDroneType +"/" + thisDroneIdentity + "/partner";
         System.out.println(name + " is working in tandem with " + n);
         client.publish(thisDronePartnerTopic, sendTheseBytes, 0, false);
+    }
+
+    // no idea about how drones are assigned co-working partners
+    // ground station gives information or other methods?
+    // Or, we can use this function to simply fake it.
+
+    public void capturesImages() throws MqttException {
+
+        JSONObject photoToSend = new JSONObject();
+        String target = getBufferImage();
+        // Mocking upcoming image results.
+        if ( this.positionX != x |  this.positionY != y) {
+
+        switch(target) {
+            case "Human":
+                photoToSend.put(" Ranger ", "detected");
+                break;
+            case  "Plant":
+                // code block
+                photoToSend.put(" Plant  ", "detected");
+                break;
+
+            case  "Animal":
+                // code bloc
+                photoToSend.put(" Animal  ", "detected");
+                break;
+            default:
+                System.out.println(  " No specific object detected by   " + this.name);
+                // code block
+        }
+            String sendThisJson = photoToSend.toString();
+            MqttMessage message = new MqttMessage(sendThisJson.getBytes());
+            message.setQos(0);
+            client.publish("chalmers/dat220/group1/drone/Images", message);
+
+        }
+    }
+
+    // This suppose to return whatever images we want.
+    public String  getBufferImage() {
+        return null;
     }
 
     // maybe not needed

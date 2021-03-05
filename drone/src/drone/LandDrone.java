@@ -6,6 +6,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class LandDrone extends Drone {
@@ -13,9 +14,11 @@ public class LandDrone extends Drone {
     // keep it in the land drone and air drone
     // in case sometime we need to distinguish the air drone and land drone.
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-drone";
+    LinkedList<String> availableDrones;
 
     public LandDrone(String n){
         super(n);
+        availableDrones.add(n);
 
         //connect with the public broker
         try {
@@ -77,6 +80,7 @@ public class LandDrone extends Drone {
 
     @Override
     public void getMissions() {
+
 
     }
 }
