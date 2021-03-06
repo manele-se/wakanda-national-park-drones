@@ -31,6 +31,8 @@ public class Dashboard {
     // How MQTT topics and wildcards work: https://subscription.packtpub.com/book/application_development/9781787287815/1/ch01lvl1sec18/understanding-wildcards
     private static final String LOCATION_TOPICS = "chalmers/dat220/group1/+/+/location";
     private static final String TANDEM_TOPICS = "chalmers/dat220/group1/+/+/partner";
+    private static final String IMAGE_REC_TOPIC = "chalmers/dat220/group1/imagerec"; // Not sure what topic this will be yet!
+
     // Marker images
     private static final String LANDDRONE_MARKER_URL = "//maps.google.com/mapfiles/kml/pal4/icon45.png";
     private static final String AIRDRONE_MARKER_URL = "//maps.google.com/mapfiles/ms/icons/helicopter.png";
@@ -87,10 +89,15 @@ public class Dashboard {
 
             // Get the partner's identity
             JSONObject json = Communication.getJson(msg);
-            System.out.println(json.toString());
             String partner = json.getString("partner");
 
             tandemChanged(sender, partner);
+        });
+
+        mqttClient.subscribe(IMAGE_REC_TOPIC, 0, (topic, msg) -> {
+            // Assuming the Image Recognition process sends just a simple string:
+            String payload = Communication.getString(msg);
+            System.out.println("Image recognition has detected: " + payload);
         });
 
         // We should close the MQTT connection properly when the program shuts down
@@ -127,7 +134,6 @@ public class Dashboard {
     }
 
     private static void locationChanged(String objectType, String objectId, double latitude, double longitude) {
-        System.out.println("Location of " + objectType + " '" + objectId + "': " + latitude + "," + longitude);
         String mapObjectKey = objectType + "_" + objectId;
         String markerUrl = objectTypeMarkers.getOrDefault(objectType, UNKNOWN_MARKER_URL);
         String currentPartner = tandemMap.getOrDefault(mapObjectKey, null);
@@ -135,7 +141,6 @@ public class Dashboard {
     }
 
     private static void tandemChanged(String sender, String partner) {
-        System.out.println("tandemChanges(" + sender + ", " + partner + ")");
         tandemMap.put(sender, partner);
         if (mappedObjects.containsKey(sender)) {
             MapObject current = mappedObjects.get(sender);

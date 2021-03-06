@@ -30,7 +30,6 @@ public class ApiController {
     // { "drone_bob" : { "latitude": 1.2, "longitude": 2.3 } }
     @GetMapping("/mapstate")
     public Map<String, MapObject> getAllMapObjects() {
-        System.out.println("API request mapstate");
         return Dashboard.mappedObjects;
     }
 
@@ -48,7 +47,6 @@ public class ApiController {
         Dashboard.mqttClient.subscribe(ACCESS_TOPIC, 0, (topic, msg) -> {
             Dashboard.mqttClient.unsubscribe(ACCESS_TOPIC);
             String payload = Communication.getString(msg);
-            System.out.println("Received response from Security component");
             response.set(payload);
             receivedResponse.release();
         });
@@ -59,22 +57,17 @@ public class ApiController {
         signinRequest.put("username", username);
         signinRequest.put("password", password);
 
-        System.out.println("Sending request to Security component");
         Communication.send(Dashboard.mqttClient, SIGNIN_TOPIC, signinRequest);
-        System.out.println("Request to Security component was sent!");
 
         try {
             if (receivedResponse.tryAcquire(1, 10, TimeUnit.SECONDS)) {
                 String result = response.get();
-                System.out.println("Response from Security component: " + result);
                 return response.get();
             }
             else {
-                System.out.println("Timeout!");
                 return "timeout";
             }
         } catch (InterruptedException e) {
-            System.out.println("Error!");
             return "error";
         }
     }
