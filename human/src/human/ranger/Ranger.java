@@ -13,17 +13,17 @@ import java.util.Random;
 
 //A component (implemented as a separate process) that ‘simulates’ one (or more) person(s):
 // this/these person(s) ‘walks’ around in a virtual park.
-// This process should generate data for movement, heart-beat signals (if the person is a human.ranger).
+// This process should generate data for movement, heart-beat signals (if the person is a ranger).
 public class Ranger {
 
-    // human.ranger basic information
+    // ranger basic information
     protected double x;
     protected double y;
     protected String name;
     IMqttClient client = null;
 
-    // human.ranger publisher_id
-    private static final String PUBLISHER_ID = "chalmers-dat220-group1-human.ranger";
+    // human publisher_id
+    private static final String PUBLISHER_ID = "chalmers-dat220-group1-human";
 
     public Ranger(String n){
         this.name = n;
@@ -109,7 +109,7 @@ public class Ranger {
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisRangerIdentity = this.name;
-        String thisRangerLocationTopic = "chalmers/dat220/group1/human.ranger/" + thisRangerIdentity + "/location";
+        String thisRangerLocationTopic = "chalmers/dat220/group1/ranger/" + thisRangerIdentity + "/location";
         client.publish(thisRangerLocationTopic, sendTheseBytes, 0, false);
     }
 }
