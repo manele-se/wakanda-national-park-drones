@@ -1,4 +1,4 @@
-package poacher;
+package human.poacher;
 
 public class Poacher {
 }

@@ -1,4 +1,4 @@
-package ranger;
+package human.ranger;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -13,17 +13,17 @@ import java.util.Random;
 
 //A component (implemented as a separate process) that ‘simulates’ one (or more) person(s):
 // this/these person(s) ‘walks’ around in a virtual park.
-// This process should generate data for movement, heart-beat signals (if the person is a ranger).
+// This process should generate data for movement, heart-beat signals (if the person is a human.ranger).
 public class Ranger {
 
-    // ranger basic information
+    // human.ranger basic information
     protected double x;
     protected double y;
     protected String name;
     IMqttClient client = null;
 
-    // ranger publisher_id
-    private static final String PUBLISHER_ID = "chalmers-dat220-group1-ranger";
+    // human.ranger publisher_id
+    private static final String PUBLISHER_ID = "chalmers-dat220-group1-human.ranger";
 
     public Ranger(String n){
         this.name = n;
@@ -109,7 +109,7 @@ public class Ranger {
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
         String thisRangerIdentity = this.name;
-        String thisRangerLocationTopic = "chalmers/dat220/group1/ranger/" + thisRangerIdentity + "/location";
+        String thisRangerLocationTopic = "chalmers/dat220/group1/human.ranger/" + thisRangerIdentity + "/location";
         client.publish(thisRangerLocationTopic, sendTheseBytes, 0, false);
     }
 }
