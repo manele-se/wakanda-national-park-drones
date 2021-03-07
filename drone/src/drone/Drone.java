@@ -66,7 +66,7 @@ public abstract class Drone {
 
     // when having missions, moving function
     public void moveTo() {
-        while (positionY != -1 && (x != positionX || y != positionY)) {
+        while (this.positionY != -1 && (x != positionX || y != positionY)) {
 
             if (x + 0.001 < positionX)
                 x = x + 0.001;
@@ -116,6 +116,7 @@ public abstract class Drone {
             y = y - m;
             k = 0;
         }
+        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             sendLocation();
             sendBattery();
@@ -123,7 +124,6 @@ public abstract class Drone {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {

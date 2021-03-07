@@ -18,7 +18,17 @@ public class AirDrone extends Drone {
         //connect with the public broker
         try {
             // Each publisher id must be unique - added the drone's name to the end
-            this.client = Communication.connect(PUBLISHER_ID + "-" + n);
+            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID + "-" + n);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(true);
+        options.setCleanSession(true);
+        options.setConnectionTimeout(10);
+        try {
+            client.connect(options);
         } catch (MqttException e) {
             e.printStackTrace();
         }
