@@ -48,11 +48,6 @@ public class MissionController {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) throws MqttException{
-        delegateMissionRequest("alice");
-    }
-
 }
 
 

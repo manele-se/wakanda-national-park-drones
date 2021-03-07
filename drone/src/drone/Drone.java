@@ -49,8 +49,9 @@ public abstract class Drone {
         String sendThisJson = positionToSend.toString();
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
 
+        String thisDroneType = this.getClass().getSimpleName().toLowerCase();
         String thisDroneIdentity = this.name;
-        String thisDroneBatteryTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/battery";
+        String thisDroneBatteryTopic = "chalmers/dat220/group1/drone/" + thisDroneType + "/" +  thisDroneIdentity + "/battery";
         try {
             client.publish(thisDroneBatteryTopic, sendTheseBytes, 0, false);
         } catch (MqttException e) {
@@ -151,10 +152,20 @@ public abstract class Drone {
 
     // send photo information through broker
     public void sendPhoto() throws MqttException {
+        Random r = new Random();
+        int p = r.nextInt(4);// 0,1,23
         JSONObject photoToSend = new JSONObject();
 
-        // the second variable may need to be changed according to the image recognition function
-        photoToSend.put("photo", true);
+        // four type of photo, animal/plants/human/others
+        if(p == 0){
+            photoToSend.put("photo", "animal");
+        } else if(p == 1){
+            photoToSend.put("photo","plant");
+        } else if(p == 2){
+            photoToSend.put("photo","human");// not ranger
+        } else{
+            photoToSend.put("photo","others");
+        }
 
         String sendThisJson = photoToSend.toString();
         byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
@@ -182,15 +193,9 @@ public abstract class Drone {
         System.out.println(name + " is working in tandem with " + n);
         client.publish(thisDronePartnerTopic, sendTheseBytes, 0, false);
     }
-
     // maybe not needed
     // judge whether the drones are out of the map
     public abstract boolean outOfBounds();
-
-    // maybe not needed
-    // wake up drone
-    public void setAlive() {
-    }
 
     // translate the messages from the ground station
     public abstract void getMissions();
