@@ -70,7 +70,8 @@ public class Ranger {
     private void pickNewDestination() {
         this.targetLatitude = randomLatitude();
         this.targetLongitude = randomLongitude();
-        // Had to find this multiplier (10000) by trial and error
+        // Count how many steps left to "walk"
+        // Multiplying by 10000 to make it look "real"
         this.stepsLeft = (int)(distanceToTarget() * 10000);
     }
 
@@ -81,7 +82,7 @@ public class Ranger {
             // Pick a new destination
             pickNewDestination();
 
-            // Walk there one step at a time
+            // Walk there one step at a time until arriving at the destination
             while (stepsLeft > 0) {
                 // Move one step forward
                 latitude += (targetLatitude - latitude) / stepsLeft;
