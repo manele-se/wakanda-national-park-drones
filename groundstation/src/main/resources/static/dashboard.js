@@ -49,7 +49,10 @@ async function update() {
                     position,
                     map,
                     title: key,
-                    icon: info.markerUrl
+                    icon: {
+                        url: info.markerUrl,
+                        anchor: new google.maps.Point(16, 16)
+                    }
                 });
             }
 
