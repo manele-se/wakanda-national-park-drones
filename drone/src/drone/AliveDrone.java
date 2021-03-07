@@ -1,7 +1,9 @@
 package drone;
 
 
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.json.JSONObject;
 
 import java.util.Random;
 
@@ -9,6 +11,7 @@ public class AliveDrone {
 
     // haven't used bash script
     // thought like this
+    private static final String MISSON_TOPICS = "chalmers/dat220/group1/+/+/mission";
     public static void main(String[] args) throws MqttException {
 
         System.out.println(args[0]);
@@ -26,23 +29,27 @@ public class AliveDrone {
             drone.workInTandem(args[2]);
         }
 
-        // Considering the logic of travel and moveTo, thought it would be like this
-        // pseudo code
-        //
-        // subscribe the mqtt from mission handler{
-        //  use the translate function to set drones position
-        // }
-        //
-        // while(true){
-        //  while(timeToTravel()){ // continuous to check whether the drone has a mission
-        //      travel();
-        //      }
-        //  moveTo(); // have a mission
-        // }
-        // two while, a little complicated, but no idea about an easier way to implement it.
+        drone.client.subscribe(MISSON_TOPICS, 0, (topic, msg) -> {
+            // Get the drone's identity
+            // First split the topic into parts
+            String[] topicParts = topic.split("/");
+            //String objectType = topicParts[3];
+           // String objectId = topicParts[4];
 
-        Random random = new Random();
-        drone.setPosition(random.nextDouble() * 0.06 - 1.9638, random.nextDouble() * 0.08 + 34.699);
-        drone.moveTo();
+            JSONObject payload = Communication.getJson(msg);
+
+            // Get latitude and longitude from the payload
+            double latitude = payload.getDouble("latitude");
+            double longitude = payload.getDouble("longitude");
+
+            drone.setPosition(latitude, longitude);
+        });
+
+        while(true) {
+            while (drone.timeToTravel()) {
+                drone.travel();
+            }
+            drone.moveTo();
+        }
     }
 }
