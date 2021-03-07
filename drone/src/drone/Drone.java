@@ -123,7 +123,7 @@ public abstract class Drone {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("traveling x:" + x + "  traveling y: " + y);
+        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {

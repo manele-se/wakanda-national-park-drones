@@ -14,9 +14,11 @@ public class AliveDrone {
     private static final String MISSON_TOPICS = "chalmers/dat220/group1/+/+/mission";
     public static void main(String[] args) throws MqttException {
 
+
         System.out.println(args[0]);
         System.out.println(args[1]);
         Drone drone;
+
 
         if (args[0].equals("0")) {
             drone = new AirDrone(args[1]);

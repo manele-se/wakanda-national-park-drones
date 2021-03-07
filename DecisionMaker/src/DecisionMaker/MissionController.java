@@ -49,6 +49,10 @@ public class MissionController {
         }
     }
 
+    public static void main(String[] args) throws MqttException{
+        delegateMissionRequest("alice");
+    }
+
 }
 
 
