@@ -46,6 +46,20 @@ public class Communication {
         options.setCleanSession(true);
         options.setConnectionTimeout(10);
         mqttClient.connect(options);
+
+        // We should close the MQTT connection properly when the program shuts down
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                try {
+                    mqttClient.disconnect();
+                    mqttClient.close();
+                }
+                catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         return mqttClient;
     }
 }

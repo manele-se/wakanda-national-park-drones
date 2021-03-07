@@ -1,5 +1,6 @@
 package human.ranger;
 
+import communication.Communication;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -16,100 +17,96 @@ import java.util.Random;
 // This process should generate data for movement, heart-beat signals (if the person is a ranger).
 public class Ranger {
 
-    // ranger basic information
-    protected double x;
-    protected double y;
-    protected String name;
-    IMqttClient client = null;
+    // Limits to location
+    private final static double MIN_LATITUDE = -1.9638;
+    private final static double MAX_LATITUDE = -1.9068;
+    private final static double MIN_LONGITUDE = 34.699;
+    private final static double MAX_LONGITUDE = 34.787;
 
-    // human publisher_id
+    // Helper functions to get random location
+    private final static Random random = new Random();
+    private static double randomDouble(double min, double max) {
+        return min + (max - min) * random.nextDouble();
+    }
+    private static double randomLatitude() {
+        return randomDouble(MIN_LATITUDE, MAX_LATITUDE);
+    }
+    private static double randomLongitude() {
+        return randomDouble(MIN_LONGITUDE, MAX_LONGITUDE);
+    }
+
+    // Ranger information
+    protected String name;
+    protected IMqttClient client = null;
+    // Current location
+    protected double latitude;
+    protected double longitude;
+    // Destination
+    protected double targetLatitude;
+    protected double targetLongitude;
+    // Number of steps left to "walk"
+    protected int stepsLeft;
+
+    // Publisher ID root
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-human";
 
-    public Ranger(String n){
+    public Ranger(String n) throws MqttException {
+        // Store name
         this.name = n;
-
-        //connect with the public broker
-        try {
-            this.client = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        try {
-            client.connect(options);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
+        // Connect to MQTT hub
+        this.client = Communication.connect(PUBLISHER_ID + "-" + name.toLowerCase());
+        // Start at a random location
+        this.latitude = randomLatitude();
+        this.longitude = randomLongitude();
     }
 
-    // this/these person(s) ‘walks’ around in a virtual park.
-    public void travel() {
-        Random r = new Random();
+    // Function that measures distance from current location to the target location
+    // SQRT((x1-x2)² + (y1-y2)²)
+    private double distanceToTarget() {
+        return Math.sqrt((targetLatitude - latitude) * (targetLatitude - latitude) + (targetLongitude - longitude) * (targetLongitude - longitude));
+    }
 
-        // random generate latitude
-        int i1 = r.nextInt(10);
-        double d1 = r.nextDouble();
-        double x1 = i1 * (10 - d1);
-        // double variable retains two decimal places
-        BigDecimal temp = new BigDecimal(x1);
-        x1 = temp.setScale(2, RoundingMode.HALF_UP).doubleValue();
-        this.x = x1;
+    // Function that picks a new target location randomly and calculates how many steps it takes to "walk" there
+    private void pickNewDestination() {
+        this.targetLatitude = randomLatitude();
+        this.targetLongitude = randomLongitude();
+        // Had to find this multiplier (10000) by trial and error
+        this.stepsLeft = (int)(distanceToTarget() * 10000);
+    }
 
-        // random generate longitude
-        int i2 = r.nextInt(10);
-        double d2 = r.nextDouble();
-        double y1 = i2 * (10 + d2);
-        temp = new BigDecimal(y1);
-        y1 = temp.setScale(2, RoundingMode.HALF_UP).doubleValue();
-        this.y = y1;
-
-        // travel around the park
-        int k = 0;
+    // This person "walks" around in the virtual park.
+    public void travel() throws InterruptedException, MqttException {
+        // Loop forever!
         while (true) {
-            int t = r.nextInt(2);
+            // Pick a new destination
+            pickNewDestination();
 
-            // around, maybe not needed
-            if (k == 0) {
-                x = x + 10.0;
-                k += 1;
-            } else if (k == 1) {
-                y = y + 10.0;
-                k += 1;
-            } else if (k == 2) {
-                x = x - 10.0;
-                k += 1;
-            } else {
-                y = y - 10.0;
-                k = 0;
-            }
+            // Walk there one step at a time
+            while (stepsLeft > 0) {
+                // Move one step forward
+                latitude += (targetLatitude - latitude) / stepsLeft;
+                longitude += (targetLongitude - longitude) / stepsLeft;
 
-            //random send information, maybe don't need randomize
-            if (t == 1) {
-                try {
-                    sendInformation();
-                    //System.out.println("latitude:" + x + "longitude" + y);
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
+                // Decrease number of steps left
+                --stepsLeft;
+
+                // Send the location over MQTT
+                sendLocation();
+
+                // Sleep for a while
+                Thread.sleep(500);
             }
         }
     }
 
-    // send signal
-    public void sendInformation() throws MqttException {
+    // Send location signal
+    public void sendLocation() throws MqttException {
         JSONObject positionToSend = new JSONObject();
-        positionToSend.put("latitude", this.x);
-        positionToSend.put("longitude", this.y);
+        positionToSend.put("latitude", this.latitude);
+        positionToSend.put("longitude", this.longitude);
 
-        String sendThisJson = positionToSend.toString();
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+        String thisRangerLocationTopic = "chalmers/dat220/group1/ranger/" + this.name + "/location";
 
-        String thisRangerIdentity = this.name;
-        String thisRangerLocationTopic = "chalmers/dat220/group1/ranger/" + thisRangerIdentity + "/location";
-        client.publish(thisRangerLocationTopic, sendTheseBytes, 0, false);
+        Communication.send(client, thisRangerLocationTopic, positionToSend);
     }
 }

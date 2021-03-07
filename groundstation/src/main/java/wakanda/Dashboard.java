@@ -100,21 +100,6 @@ public class Dashboard {
             System.out.println("Image recognition has detected: " + payload);
         });
 
-        // We should close the MQTT connection properly when the program shuts down
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.println("Shutting down");
-                try {
-                    mqttClient.unsubscribe(LOCATION_TOPICS);
-                    mqttClient.disconnect();
-                    mqttClient.close();
-                }
-                catch (MqttException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         // Test sending a location for drone '123', in the middle of Serengeti.
         // This is how sending locations for drone should work.
         // The JSONObject should contain the latitude and longitude for the drone, stored in variables.

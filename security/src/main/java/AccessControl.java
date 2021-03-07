@@ -53,23 +53,6 @@ public class AccessControl {
             responseSemaphore.release();
         });
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.println("Shutting down");
-                try {
-                    System.out.println("Unsubscribing");
-                    mqttClient.unsubscribe(SIGNIN_TOPIC);
-                    System.out.println("Disconnecting");
-                    mqttClient.disconnect();
-                    System.out.println("Closing");
-                    mqttClient.close();
-                }
-                catch (MqttException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         while (true) {
             try {
                 responseSemaphore.acquire();
