@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 
 // Using JSON-Java: https://www.baeldung.com/java-org-json
 
@@ -38,11 +40,15 @@ public class Dashboard {
     private static final String AIRDRONE_MARKER_URL = "//maps.google.com/mapfiles/ms/icons/helicopter.png";
     private static final String RANGER_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/police.png";
     private static final String UNKNOWN_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/question.png";
-    private static final String FIRE_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/firedept.png;";
+    private static final String FIRE_MARKER_URL = "//maps.google.com/mapfiles/ms/micons/firedept.png";
+    private static final String POACHER_MARKER_URL = "/poacher.svg";
+    private static final String ANIMAL_MARKER_URL = "/cat.svg";
+    private static final String PLANT_MARKER_URL = "/tree.svg"; // "//maps.google.com/mapfiles/ms/icons/tree.png";
 
     // Data storage
-    public static final Map<String, MapObject> mappedObjects = new HashMap<>();
+    public static final Map<String, MapObject> mappedObjects = new TreeMap<>();
     public static final Map<String, String> tandemMap = new HashMap<>();
+    public static int nextImageRecognitionId = 1;
 
     private static final Map<String, String> objectTypeMarkers = new HashMap<>();
 
@@ -51,6 +57,10 @@ public class Dashboard {
         objectTypeMarkers.put("airdrone", AIRDRONE_MARKER_URL);
         objectTypeMarkers.put("landdrone", LANDDRONE_MARKER_URL);
         objectTypeMarkers.put("ranger", RANGER_MARKER_URL);
+        objectTypeMarkers.put("fire", FIRE_MARKER_URL);
+        objectTypeMarkers.put("poacher", POACHER_MARKER_URL);
+        objectTypeMarkers.put("animal", ANIMAL_MARKER_URL);
+        objectTypeMarkers.put("plant", PLANT_MARKER_URL);
 
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
         mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
@@ -96,23 +106,41 @@ public class Dashboard {
 
         mqttClient.subscribe(IMAGE_REC_TOPIC, 0, (topic, msg) -> {
             // Assuming the Image Recognition process sends just a simple string:
-            String payload = Communication.getString(msg);
-            System.out.println("Image recognition has detected: " + payload);
+            JSONObject payload = Communication.getJson(msg);
+            // What was discovered? Animal, Plant or Poacher.
+            String objectDetected = payload.getString("ObjectDetected");
+            // Who discovered it?
+            String detectorType, detectorId, detectorKey;
+            if (payload.has("airdrone")) {
+                detectorType = "airdrone";
+            }
+            else if (payload.has("landdrone")) {
+                detectorType = "landdrone";
+            }
+            else if (payload.has("ranger")) {
+                detectorType = "ranger";
+            }
+            else {
+                System.out.println("Error: Received an image recognition object from unknown object type");
+                return;
+            }
+            detectorId = payload.getString(detectorType);
+
+            System.out.println("Photo of " + objectDetected + " was taken by " + detectorType + " " + detectorId);
+
+            // Get the drone object that took the picture
+            detectorKey = detectorType + "_" + detectorId;
+            MapObject discoveredBy = mappedObjects.get(detectorKey);
+
+            // Get the image icon URL
+            String markerUrl = objectTypeMarkers.get(objectDetected.toLowerCase());
+
+            String newKey = String.format("imagerec-%05d", nextImageRecognitionId);
+            nextImageRecognitionId++;
+            MapObject image = new MapObject(discoveredBy.getLatitude(), discoveredBy.getLongitude(), markerUrl, 48, 1,null);
+
+            mappedObjects.put(newKey, image);
         });
-
-        // Test sending a location for drone '123', in the middle of Serengeti.
-        // This is how sending locations for drone should work.
-        // The JSONObject should contain the latitude and longitude for the drone, stored in variables.
-       /* JSONObject positionToSend = new JSONObject();
-        positionToSend.put("latitude", -1.948754);
-        positionToSend.put("longitude", 34.700409);
-
-        String sendThisJson = positionToSend.toString();
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-
-        String thisDroneIdentity = "123";
-        String thisDroneLocationTopic = "chalmers/dat220/group1/drone/" + thisDroneIdentity + "/location";
-        mqttClient.publish(thisDroneLocationTopic, sendTheseBytes, 0, false);*/
 
         // Start the Spring Boot Web application
         SpringApplication.run(WebServer.class, args);
@@ -122,13 +150,13 @@ public class Dashboard {
         String mapObjectKey = objectType + "_" + objectId;
         String markerUrl = objectTypeMarkers.getOrDefault(objectType, UNKNOWN_MARKER_URL);
         String currentPartner = tandemMap.getOrDefault(mapObjectKey, null);
-        mappedObjects.put(mapObjectKey, new MapObject(latitude, longitude, markerUrl, currentPartner));
+        mappedObjects.put(mapObjectKey, new MapObject(latitude, longitude, markerUrl, 32, 2, currentPartner));
     }
 
     private static void tandemChanged(String sender, String partner) {
         tandemMap.put(sender, partner);
         if (mappedObjects.containsKey(sender)) {
-            MapObject current = mappedObjects.get(sender);
+            MapObject current = (MapObject)mappedObjects.get(sender);
             current.setPartner(partner);
         }
     }

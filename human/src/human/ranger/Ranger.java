@@ -94,6 +94,11 @@ public class Ranger {
                 // Send the location over MQTT
                 sendLocation();
 
+                // Only used for testing...
+                //if (random.nextDouble() > 0.95) {
+                //    sendPhoto();
+                //}
+
                 // Sleep for a while
                 Thread.sleep(500);
             }
@@ -110,4 +115,14 @@ public class Ranger {
 
         Communication.send(client, thisRangerLocationTopic, positionToSend);
     }
+
+    // Only used for testing
+    /*public void sendPhoto() throws MqttException {
+        JSONObject payload = new JSONObject();
+        payload.put("photo", true);
+
+        String thisRangerPhotoTopic = "chalmers/dat220/group1/ranger/" + this.name + "/photo";
+
+        Communication.send(client, thisRangerPhotoTopic, payload);
+    }*/
 }

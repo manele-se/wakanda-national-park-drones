@@ -11,7 +11,10 @@ Right-click on **Dashboard** and select **Run Dashboard.main**.
 Then navigate to **human**, **src**, **human**, **HumanMain**.
 Right-click on **HumanMain** and select **Run HumanMain.main**.
 
-All these three can be reached from the project dropdown at the top right of the IntelliJ program window.
+Then navigate to **ImageRecognition**, **src**, **ImageAnalyzer**.
+Right-click on **ImageAnalyzer** and select **Run ImageAnalyzer.main**.
+
+All these four can be reached from the project dropdown at the top right of the IntelliJ program window.
 In that case, pick the class and click the green "play" button instead.
 
 Finally go to the **Terminal** *(can be found in the bottom section of the program window)*.
