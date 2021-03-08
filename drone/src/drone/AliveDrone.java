@@ -38,7 +38,7 @@ public class AliveDrone {
             String objectType = topicParts[3];
             String objectId = topicParts[4];
 
-            if(objectId == drone.name) {
+            if(objectId.equals(drone.name)) {
                 JSONObject payload = Communication.getJson(msg);
 
                 // Get latitude and longitude from the payload
