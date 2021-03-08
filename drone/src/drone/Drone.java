@@ -11,6 +11,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Drone {
+    private static int k = 0;
+
     // the basic information of Drones
     protected double x;
     protected double y;
@@ -31,7 +33,7 @@ public abstract class Drone {
         x = random.nextDouble() * 0.06 - 1.9638; //latitude
         y = random.nextDouble() * 0.08 + 34.699; // longitude
         battery = 100;
-        System.out.println("orginal x:" + x + "  orginal y:" + y);
+        //System.out.println("orginal x:" + x + "  orginal y:" + y);
     }
 
     // get position from the message
@@ -82,11 +84,12 @@ public abstract class Drone {
             else if (y - 0.001 > positionY) y = y - 0.001;
             else y = positionY;
 
-            System.out.println("moving x:" + x + "  moving y: " + y);
+           // System.out.println("moving x:" + x + "  moving y: " + y);
             try {
                 sendLocation();
                 sendBattery();
                 sendSensorSignal();
+                sendPhoto();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -101,7 +104,6 @@ public abstract class Drone {
 
     // travel function when no missions or mission is over
     public void travel() {
-        int k = 0;
         Random r = new Random();
         double m = r.nextDouble() * 0.05;
         if (k == 0) {
@@ -117,11 +119,12 @@ public abstract class Drone {
             y = y - m;
             k = 0;
         }
-        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
+        //System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             sendLocation();
             sendBattery();
             sendSensorSignal();
+            sendPhoto();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,9 +179,6 @@ public abstract class Drone {
         client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
     }
 
-    // no idea about how drones are assigned co-working partners
-    // ground station gives information or other methods?
-    // Or, we can use this function to simply fake it.
     public void workInTandem(String n) throws MqttException {
         this.partner = n;
         JSONObject tandemToSend = new JSONObject();
