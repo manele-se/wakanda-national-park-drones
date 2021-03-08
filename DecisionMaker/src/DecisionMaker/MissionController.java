@@ -13,9 +13,9 @@ public class MissionController {
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-mission" ;
 
     // dashboard sends a message on this topic when a ranger assign mission to drones
-    public static IMqttClient mqttClient;
+    private static IMqttClient mqttClient;
 
-    private String DroneName;
+    private static String DroneName;
 
     public MissionController(String DroneIdentity){
         this.DroneName = DroneIdentity;
@@ -28,7 +28,7 @@ public class MissionController {
         }
     }
 
-    public static void delegateMissionRequest ( String droneName) throws MqttException {
+    public void delegateMissionRequest(String droneName) throws MqttException {
 
         Random random = new Random();
         // latitude coordinate
@@ -40,10 +40,10 @@ public class MissionController {
         sendCoordinates.put("longitude", y);
 
         String sendJson = sendCoordinates.toString();
-        String topic = "“chalmers/dat220/group1/" + droneName + "/mission";
+        String topic = "“chalmers/dat220/group1/droneName/mission";
 
         try {
-            Communication.send(mqttClient, topic, sendJson );
+            Communication.send(this.mqttClient, topic, sendJson );
         } catch (MqttException e) {
             e.printStackTrace();
         }
