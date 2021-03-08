@@ -16,15 +16,19 @@ h1 {
     text-align: center;
 }
 
+/* The two "pages" of the html document are main element, <main id="map"> and <main id="login">
+   They should only be visible if the body has the correct class name. */
 main {
     display: none;
     top: 3rem;
 }
 
+/* <main id="map"> is only visible if <body class="showmap"> */
 body.showmap > main#map {
     display: block;
 }
 
+/* <main id="login"> is only visible if <body class="showlogin"> */
 body.showlogin > main#login {
     display: flex;
 }

@@ -4,7 +4,7 @@ let map;
 const markers = { };
 const tandemLines = { };
 
-function handleMapObjectWithPartner(key, info) {
+function handleMapObjectWithPartner(key, position, info) {
     if (info.partner in markers) {
         const partnerMarker = markers[info.partner];
         const partnerPosition = partnerMarker.getPosition();
@@ -65,7 +65,7 @@ function handleMapObject(key, info) {
     }
 
     if (info.partner) {
-        handleMapObjectWithPartner(key, info);
+        handleMapObjectWithPartner(key, position, info);
     }
 }
 

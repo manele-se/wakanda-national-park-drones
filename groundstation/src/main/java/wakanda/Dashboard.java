@@ -105,10 +105,12 @@ public class Dashboard {
         });
 
         mqttClient.subscribe(IMAGE_REC_TOPIC, 0, (topic, msg) -> {
-            // Assuming the Image Recognition process sends just a simple string:
+            // Assuming the Image Recognition process sends JSON:
             JSONObject payload = Communication.getJson(msg);
+
             // What was discovered? Animal, Plant or Poacher.
             String objectDetected = payload.getString("ObjectDetected");
+
             // Who discovered it?
             String detectorType, detectorId, detectorKey;
             if (payload.has("airdrone")) {
@@ -132,12 +134,19 @@ public class Dashboard {
             detectorKey = detectorType + "_" + detectorId;
             MapObject discoveredBy = mappedObjects.get(detectorKey);
 
+            // Get that drone's current location
+            double latitude = discoveredBy.getLatitude();
+            double longitude = discoveredBy.getLongitude();
+
             // Get the image icon URL
             String markerUrl = objectTypeMarkers.get(objectDetected.toLowerCase());
 
+            // Create a new key for the photo on the map
             String newKey = String.format("imagerec-%05d", nextImageRecognitionId);
             nextImageRecognitionId++;
-            MapObject image = new MapObject(discoveredBy.getLatitude(), discoveredBy.getLongitude(), markerUrl, 48, 1,null);
+
+            // Create the map object on the drone's location, with the correct marker image
+            MapObject image = new MapObject(latitude, longitude, markerUrl, 48, 1,null);
 
             mappedObjects.put(newKey, image);
         });
