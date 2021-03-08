@@ -15,14 +15,14 @@ public class MissionController {
     // dashboard sends a message on this topic when a ranger assign mission to drones
     private static IMqttClient mqttClient;
 
-    private static String DroneName;
+    public String DroneName;
 
     public MissionController(String DroneIdentity){
         this.DroneName = DroneIdentity;
 
         //connect with the public broker
         try {
-            this.mqttClient = Communication.connect(PUBLISHER_ID );
+            mqttClient = Communication.connect(PUBLISHER_ID );
         } catch (MqttException e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class MissionController {
         String topic = "“chalmers/dat220/group1/droneName/mission";
 
         try {
-            Communication.send(this.mqttClient, topic, sendJson );
+            Communication.send(mqttClient, topic, sendJson );
         } catch (MqttException e) {
             e.printStackTrace();
         }
