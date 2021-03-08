@@ -55,10 +55,11 @@ public class MissionController {
                 DroneType = args[1];
                 DroneName = args[2];
 
+                delegateMissionRequest(DroneType, DroneName);
+
             } else {
                 System.out.println(" Specify existing drone to assign mission to ");
 
-            delegateMissionRequest(DroneType, DroneName);
     }
 
 }
