@@ -35,16 +35,18 @@ public class AliveDrone {
             // Get the drone's identity
             // First split the topic into parts
             String[] topicParts = topic.split("/");
-            //String objectType = topicParts[3];
-           // String objectId = topicParts[4];
+            String objectType = topicParts[3];
+            String objectId = topicParts[4];
 
-            JSONObject payload = Communication.getJson(msg);
+            if(objectId == drone.name) {
+                JSONObject payload = Communication.getJson(msg);
 
-            // Get latitude and longitude from the payload
-            double latitude = payload.getDouble("latitude");
-            double longitude = payload.getDouble("longitude");
+                // Get latitude and longitude from the payload
+                double latitude = payload.getDouble("latitude");
+                double longitude = payload.getDouble("longitude");
 
-            drone.setPosition(latitude, longitude);
+                drone.setPosition(latitude, longitude);
+            }
         });
 
         while(true) {
