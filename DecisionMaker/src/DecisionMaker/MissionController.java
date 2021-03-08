@@ -39,7 +39,7 @@ public class MissionController {
         }
     }
 
-    private static void main(String[] args) throws MqttException {
+    public static void main(String[] args) throws MqttException {
 
         //connect with the public broker
         try {
