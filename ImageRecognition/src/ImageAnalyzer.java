@@ -11,7 +11,7 @@ public class ImageAnalyzer {
     // The MQTT identity of the ImageRecognition component
 
     private static final String PUBLISHER_ID = "chalmers-dat220-group1-ImageRecognizer";
-    public static IMqttClient mqttClient;
+    private static IMqttClient mqttClient;
 
     // Drone sends a message related to captured Image on this topic
     private static final String IMAGE_TOPIC = "chalmers/dat220/group1/+/+/photo";
@@ -22,6 +22,12 @@ public class ImageAnalyzer {
         String[] arr;   									// array declaration
         arr = new String[] { "Animal", "Plant", "Poacher" }; 	//  assuming will contain fixed elements
 
+        //connect with the public broker
+        try {
+            mqttClient = Communication.connect(PUBLISHER_ID );
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
         mqttClient.subscribe (IMAGE_TOPIC, 0, (topic, msg) -> {
 
             int rnd = new Random().nextInt(arr.length);
