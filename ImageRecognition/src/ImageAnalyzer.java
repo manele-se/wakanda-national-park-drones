@@ -33,7 +33,7 @@ public class ImageAnalyzer {
 
                 JSONObject imageDetection = new JSONObject();
                 imageDetection.put(DroneType, DroneIdentity);
-                imageDetection.put("ObjectDetected", rnd );
+                imageDetection.put("ObjectDetected", arr[rnd] );
                 Communication.send(mqttClient,IMAGE_REC_TOPIC, imageDetection);
 
 
