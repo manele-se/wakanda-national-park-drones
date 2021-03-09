@@ -22,7 +22,7 @@ public class MissionController {
 
         Random random = new Random();
         // latitude coordinate
-        double x = (19.068 + (random.nextDouble() * (1.9638 - 1.9068))) * -1;
+        double x = (1.9068 + (random.nextDouble() * (1.9638 - 1.9068))) * -1;
         // longitude coordinates
         double y = 34.699 + (random.nextDouble() * (34.787 - 34.699));
         JSONObject sendCoordinates = new JSONObject();

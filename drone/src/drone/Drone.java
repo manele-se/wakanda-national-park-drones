@@ -11,7 +11,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Drone {
-    private static int k = 0;
+   // private static int k = 0;
 
     // the basic information of Drones
     protected double x;
@@ -30,10 +30,10 @@ public abstract class Drone {
     public Drone(String n) {
         this.name = n;
         Random random = new Random();
-        x = random.nextDouble() * 0.06 - 1.9638; //latitude
-        y = random.nextDouble() * 0.08 + 34.699; // longitude
+        x = (1.9068 + (random.nextDouble() * (1.9638 - 1.9068))) * -1; //latitude
+        y = 34.699 + (random.nextDouble() * (34.787 - 34.699)); // longitude
         battery = 100;
-        //System.out.println("orginal x:" + x + "  orginal y:" + y);
+        System.out.println("orginal x:" + x + "  orginal y:" + y);
     }
 
     // get position from the message
@@ -84,7 +84,7 @@ public abstract class Drone {
             else if (y - 0.001 > positionY) y = y - 0.001;
             else y = positionY;
 
-           System.out.println("moving x:" + x + "  moving y: " + y);
+           // System.out.println("moving x:" + x + "  moving y: " + y);
             try {
                 sendLocation();
                 sendBattery();
@@ -100,26 +100,24 @@ public abstract class Drone {
                 e.printStackTrace();
             }
         }
+        this.positionY = -1;
     }
 
     // travel function when no missions or mission is over
     public void travel() {
         Random r = new Random();
-        double m = r.nextDouble() * 0.05;
+        double m = r.nextDouble() * 0.005;
+        int k = r.nextInt(4);
         if (k == 0) {
             x = x + m;
-            k += 1;
         } else if (k == 1) {
             y = y + m;
-            k += 1;
         } else if (k == 2) {
             x = x - m;
-            k += 1;
         } else {
             y = y - m;
-            k = 0;
         }
-        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
+        //System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             sendLocation();
             sendBattery();
