@@ -30,10 +30,10 @@ public abstract class Drone {
     public Drone(String n) {
         this.name = n;
         Random random = new Random();
-        x = (1.9068 + (random.nextDouble() * (1.9638 - 1.9068))) * -1; //latitude
-        y = 34.699 + (random.nextDouble() * (34.787 - 34.699)); // longitude
+        x = (1.9168 + (random.nextDouble() * (1.9538 - 1.9168))) * -1; //latitude
+        y = 34.710+ (random.nextDouble() * (34.767 - 34.699)); // longitude
         battery = 100;
-        System.out.println("orginal x:" + x + "  orginal y:" + y);
+        // System.out.println("orginal x:" + x + "  orginal y:" + y);
     }
 
     // get position from the message
@@ -106,15 +106,15 @@ public abstract class Drone {
     // travel function when no missions or mission is over
     public void travel() {
         Random r = new Random();
-        double m = r.nextDouble() * 0.005;
+        double m = r.nextDouble() * 0.001;
         int k = r.nextInt(4);
-        if (k == 0) {
+        if (k == 0 && intheBounds(x+m,y)) {
             x = x + m;
-        } else if (k == 1) {
+        } else if (k == 1 && intheBounds(x, y+m)) {
             y = y + m;
-        } else if (k == 2) {
+        } else if (k == 2 && intheBounds(x-m,y)) {
             x = x - m;
-        } else {
+        } else if(k == 3 && intheBounds(x, y-m)) {
             y = y - m;
         }
         //System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
@@ -193,7 +193,15 @@ public abstract class Drone {
     }
     // maybe not needed
     // judge whether the drones are out of the map
-    public abstract boolean outOfBounds();
+    public boolean intheBounds(double x,double y){
+        if(x < -1.9638 || x > -1.9068){
+            return false;
+        } else if(y < 34.699 || y > 34.787){
+            return false;
+        } else{
+            return true;
+        }
+    }
 
     // translate the messages from the ground station
     public abstract void getMissions();
