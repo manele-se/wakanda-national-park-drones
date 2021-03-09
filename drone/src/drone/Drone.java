@@ -84,7 +84,7 @@ public abstract class Drone {
             else if (y - 0.001 > positionY) y = y - 0.001;
             else y = positionY;
 
-           // System.out.println("moving x:" + x + "  moving y: " + y);
+           System.out.println("moving x:" + x + "  moving y: " + y);
             try {
                 sendLocation();
                 sendBattery();
@@ -119,7 +119,7 @@ public abstract class Drone {
             y = y - m;
             k = 0;
         }
-        //System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
+        System.out.println( this.name +"traveling x:" + x + "  traveling y: " + y);
         try {
             sendLocation();
             sendBattery();

@@ -51,7 +51,7 @@ public class MissionController {
             // args[1] is the drone type : airdrone or landdrone
              // args[2] is the drone name
 
-        if (args.length > 1 &&  (args[1].equals("airdrone") |  args[1].equals("landdrone" ))) {
+        if (args.length > 1 &&  (args[0].equals("airdrone") |  args[0].equals("landdrone" ))) {
                 DroneType = args[0];
                 DroneName = args[1];
 

@@ -38,6 +38,7 @@ public class AliveDrone {
             String objectType = topicParts[3];
             String objectId = topicParts[4];
 
+            System.out.println(objectId + " " + objectType);
             if(objectId.equals(drone.name)) {
                 JSONObject payload = Communication.getJson(msg);
 
@@ -48,9 +49,8 @@ public class AliveDrone {
                 drone.setPosition(latitude, longitude);
             }
         });
-
         while(true) {
-            while (drone.timeToTravel()) {
+            if (drone.timeToTravel()) {
                 drone.travel();
             }
             drone.moveTo();
