@@ -30,7 +30,7 @@ public class MissionController {
         sendCoordinates.put("longitude", y);
 
         String sendJson = sendCoordinates.toString();
-        String topic = "“chalmers/dat220/group1/" + droneType +  "/" +  droneName  +  "/mission";
+        String topic = "chalmers/dat220/group1/" + droneType +  "/" +  droneName  +  "/mission";
 
         try {
             Communication.send(mqttClient, topic, sendJson );
@@ -52,8 +52,8 @@ public class MissionController {
              // args[2] is the drone name
 
         if (args.length > 1 &&  (args[1].equals("airdrone") |  args[1].equals("landdrone" ))) {
-                DroneType = args[1];
-                DroneName = args[2];
+                DroneType = args[0];
+                DroneName = args[1];
 
                 delegateMissionRequest(DroneType, DroneName);
 
