@@ -36,12 +36,6 @@ public class LandDrone extends Drone {
         }
     }
 
-
-    @Override
-    public boolean outOfBounds() {
-        return false;
-    }
-
     // temperature sensor
     // cant find any information of smoke sensor in the task1 file.
     // maybe need the information of location

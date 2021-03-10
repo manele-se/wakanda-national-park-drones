@@ -35,12 +35,6 @@ public class AirDrone extends Drone {
     }
 
 
-
-    @Override
-    public boolean outOfBounds() {
-        return false;
-    }
-
     // sensor
     // cant find other sensors in the air drone except the camera sensor
     @Override
