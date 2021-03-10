@@ -40,9 +40,27 @@ public class ImageAnalyzer {
                 JSONObject imageDetection = new JSONObject();
                 imageDetection.put(DroneType, DroneIdentity);
                 imageDetection.put("ObjectDetected", arr[rnd] );
-                Communication.send(mqttClient,IMAGE_REC_TOPIC, imageDetection);
 
-
+            Thread t1 = new Thread(new RunnableImpl(imageDetection));
+            t1.start();
     });
+
     }
+    private static class RunnableImpl implements Runnable {
+
+        JSONObject Images ;
+
+        public RunnableImpl(JSONObject json ) {
+            this.Images = json;
+        }
+
+        public void run()
+        {
+            try {
+                Communication.send(mqttClient,IMAGE_REC_TOPIC, Images);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+}
 }
