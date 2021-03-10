@@ -155,26 +155,30 @@ public abstract class Drone {
     public void sendPhoto() throws MqttException {
         Random r = new Random();
         int p = r.nextInt(4);// 0,1,23
+        int m = r.nextInt(20);//[0-19]
         JSONObject photoToSend = new JSONObject();
 
-        // four type of photo, animal/plants/human/others
-        if(p == 0){
-            photoToSend.put("photo", "animal");
-        } else if(p == 1){
-            photoToSend.put("photo","plant");
-        } else if(p == 2){
-            photoToSend.put("photo","human");// not ranger
-        } else{
-            photoToSend.put("photo","others");
+        // 5% to sent a picture
+        if (m > 18) {
+            // four type of photo, animal/plants/human/others
+            if (p == 0) {
+                photoToSend.put("photo", "animal");
+            } else if (p == 1) {
+                photoToSend.put("photo", "plant");
+            } else if (p == 2) {
+                photoToSend.put("photo", "human");// not ranger
+            } else {
+                photoToSend.put("photo", "others");
+            }
+
+            String sendThisJson = photoToSend.toString();
+            byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
+
+            String thisDroneIdentity = this.name;
+            String thisDroneType = this.getClass().getSimpleName().toLowerCase();
+            String thisDronePhotoTopic = "chalmers/dat220/group1/" + thisDroneType + "/" + thisDroneIdentity + "/photo";
+            client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
         }
-
-        String sendThisJson = photoToSend.toString();
-        byte[] sendTheseBytes = StandardCharsets.UTF_8.encode(sendThisJson).array();
-
-        String thisDroneIdentity = this.name;
-        String thisDroneType = this.getClass().getSimpleName().toLowerCase();
-        String thisDronePhotoTopic = "chalmers/dat220/group1/" + thisDroneType + "/" + thisDroneIdentity + "/photo";
-        client.publish(thisDronePhotoTopic, sendTheseBytes, 0, false);
     }
 
     public void workInTandem(String n) throws MqttException {
