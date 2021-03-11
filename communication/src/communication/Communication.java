@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 
 public class Communication {
-    private static final String BROKER_URL = "tcp://broker.hivemq.com:1883";
+    private static final String BROKER_URL = "tcp://broker.emqx.io:1883";
 
     public static JSONObject getJson(MqttMessage message) {
         // Convert the stream of bytes to a string, containing JSON

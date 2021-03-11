@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 
 // Using JSON-Java: https://www.baeldung.com/java-org-json
 
@@ -63,13 +62,7 @@ public class Dashboard {
         objectTypeMarkers.put("plant", PLANT_MARKER_URL);
 
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
-        mqttClient = new MqttClient("tcp://broker.emqx.io:1883", PUBLISHER_ID);
-
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        mqttClient.connect(options);
+        mqttClient = Communication.connect(PUBLISHER_ID);
 
         // When there is a message from a drone about location:
         mqttClient.subscribe(LOCATION_TOPICS, 0, (topic, msg) -> {
