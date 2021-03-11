@@ -63,7 +63,7 @@ public class Dashboard {
         objectTypeMarkers.put("plant", PLANT_MARKER_URL);
 
 	    // Next 6 lines copied from https://www.baeldung.com/java-mqtt-client
-        mqttClient = new MqttClient("tcp://broker.hivemq.com:1883", PUBLISHER_ID);
+        mqttClient = new MqttClient("tcp://broker.emqx.io:1883", PUBLISHER_ID);
 
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);

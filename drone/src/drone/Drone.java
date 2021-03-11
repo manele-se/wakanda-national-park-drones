@@ -156,10 +156,10 @@ public abstract class Drone {
         Random r = new Random();
         int p = r.nextInt(4);// 0,1,23
         int m = r.nextInt(20);//[0-19]
-        JSONObject photoToSend = new JSONObject();
 
         // 5% to sent a picture
         if (m > 18) {
+            JSONObject photoToSend = new JSONObject();
             // four type of photo, animal/plants/human/others
             if (p == 0) {
                 photoToSend.put("photo", "animal");
