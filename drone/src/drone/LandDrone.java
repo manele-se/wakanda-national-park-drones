@@ -20,7 +20,7 @@ public class LandDrone extends Drone {
         //connect with the public broker
         try {
             // Each publisher id must be unique - added the drone's name to the end
-            this.client = new MqttClient("tcp://broker.emqx.io:1883", PUBLISHER_ID + "-" + n);
+            this.client = new MqttClient("tcp://test.mosquitto.org:1883", PUBLISHER_ID + "-" + n);
         } catch (MqttException e) {
             e.printStackTrace();
         }
